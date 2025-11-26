@@ -11,7 +11,7 @@
     <nav class="bg-white shadow p-4 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="/" class="text-2xl font-bold text-green-600 flex items-center gap-2">
-                 💊 PharmaPro
+                 PharmaPro
             </a>
             
             <div class="flex items-center gap-4">
@@ -50,9 +50,7 @@
             @forelse($produits as $produit)
                 <div class="bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden border border-gray-100">
                     
-                    <div class="h-40 bg-gray-100 flex items-center justify-center text-4xl">
-                        💊
-                    </div>
+                    
     
                     <div class="p-4">
                         <h3 class="font-bold text-lg text-gray-800">{{ $produit->nom }}</h3>
