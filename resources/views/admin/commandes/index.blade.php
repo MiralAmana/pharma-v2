@@ -16,6 +16,7 @@
                             <th class="p-3">Client</th>
                             <th class="p-3">Total</th>
                             <th class="p-3">Statut</th>
+                            <th class="p-3">Preuve</th>
                             <th class="p-3">Actions</th>
                         </tr>
                     </thead>
@@ -25,6 +26,15 @@
                             <td class="p-3">{{ $commande->reference }}</td>
                             <td class="p-3">{{ $commande->user->name }}</td>
                             <td class="p-3">{{ $commande->total }} FCFA</td>
+                            <td class="p-3">
+    @if($commande->image_ordonnance)
+        <a href="{{ asset($commande->image_ordonnance) }}" target="_blank" class="text-blue-600 underline text-sm flex items-center gap-1">
+            📄 Voir l'ordonnance
+        </a>
+    @else
+        <span class="text-gray-400 text-xs">Aucune</span>
+    @endif
+</td>
                             <td class="p-3">
                                 @if($commande->statut == 'en_attente')
                                     <span class="text-yellow-600 font-bold">En attente</span>

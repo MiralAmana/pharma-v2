@@ -10,16 +10,16 @@ class CatalogueController extends Controller
 {
     public function index(Request $request)
     {
-        // Récupérer la recherche si elle existe
-        $search = $request->input('search');
-
-        // Requête de base : on veut les produits en stock
         $query = Produit::where('stock', '>', 0);
 
-        // Si une recherche est faite, on filtre
-        if ($search) {
-            $query->where('nom', 'ILIKE', "%{$search}%"); 
-            // Note: ILIKE est spécifique à PostgreSQL pour ignorer majuscules/minuscules
+        // Filtre par recherche
+        if ($request->filled('search')) {
+            $query->where('nom', 'ILIKE', "%{$request->search}%");
+        }
+
+        // Filtre par catégorie (NOUVEAU)
+        if ($request->filled('categorie')) {
+            $query->where('categorie', $request->categorie);
         }
 
         $produits = $query->get();

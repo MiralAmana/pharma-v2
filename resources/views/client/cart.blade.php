@@ -66,13 +66,45 @@
         </div>
 
         @if(session('cart'))
-            <div class="mt-6 flex justify-end items-center gap-4">
-                <span class="text-xl font-bold">Total à payer : {{ $totalGlobal }} FCFA</span>
-                <a href="{{ route('checkout.valider') }}" class="bg-green-600 text-white px-6 py-2 rounded font-bold hover:bg-green-700">
-    Valider la commande
-</a>
-            </div>
-        @endif
+    <div class="mt-8 bg-white p-6 rounded shadow border-t-4 border-green-500">
+
+        <div class="flex justify-between items-end">
+            <div class="text-2xl font-bold">Total : {{ number_format($totalGlobal, 0, ',', ' ') }} FCFA</div>
+
+            <form action="{{ route('checkout.valider') }}" method="POST" enctype="multipart/form-data" class="text-right">
+                @csrf
+
+                @php
+                    $needsPrescription = false;
+                    foreach(session('cart') as $id => $details) {
+                        $prod = \App\Models\Produit::find($id);
+                        if($prod && $prod->sur_ordonnance) {
+                            $needsPrescription = true;
+                            break;
+                        }
+                    }
+                @endphp
+
+                @if($needsPrescription)
+                    <div class="mb-4 text-left bg-red-50 p-4 rounded border border-red-200">
+                        <label class="block text-red-700 font-bold mb-2">
+                            ⚠️ Ordonnance Requise
+                        </label>
+                        <p class="text-sm text-gray-600 mb-2">
+                            Votre panier contient des médicaments sur ordonnance. Veuillez télécharger une photo de votre ordonnance médicale pour continuer.
+                        </p>
+                        <input type="file" name="ordonnance" accept="image/*,.pdf" required 
+                               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                    </div>
+                @endif
+
+                <button type="submit" class="bg-green-600 text-white py-3 px-8 rounded-lg font-bold hover:bg-green-700 shadow transition transform hover:scale-105">
+                    Valider et Payer
+                </button>
+            </form>
+        </div>
+    </div>
+@endif
 
     </div>
 </body>

@@ -16,9 +16,30 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                         
                         <div>
-                            <label class="block text-gray-700 font-bold mb-2">Nom du médicament *</label>
+                            <label class="block text-gray-700 font-bold mb-2">Nom du produit *</label>
                             <input type="text" name="nom" value="{{ $produit->nom }}" class="w-full border-2 border-gray-300 rounded px-3 py-2 focus:border-blue-500" required>
                         </div>
+
+                        <div class="mb-4">
+    <label class="block text-gray-700 font-bold mb-2">Catégorie *</label>
+    <select name="categorie" class="w-full border-2 border-gray-300 rounded px-3 py-2 focus:border-blue-500" required>
+        <option value="Médicaments" {{ $produit->categorie == 'Médicaments' ? 'selected' : '' }}>Médicaments</option>
+        <option value="Santé & Bien-être" {{ $produit->categorie == 'Santé & Bien-être' ? 'selected' : '' }}>Santé & Bien-être</option>
+        <option value="Hygiène & Soins" {{ $produit->categorie == 'Hygiène & Soins' ? 'selected' : '' }}>Hygiène & Soins</option>
+        <option value="Matériel Médical" {{ $produit->categorie == 'Matériel Médical' ? 'selected' : '' }}>Matériel Médical</option>
+        <option value="Bébé & Maman" {{ $produit->categorie == 'Bébé & Maman' ? 'selected' : '' }}>Bébé & Maman</option>
+        <option value="Cosmétiques" {{ $produit->categorie == 'Cosmétiques' ? 'selected' : '' }}>Cosmétiques</option>
+    </select>
+</div>
+<div class="mb-4 bg-red-50 p-4 rounded border border-red-200">
+    <label class="inline-flex items-center cursor-pointer">
+        <input type="checkbox" name="sur_ordonnance" value="1" 
+               @checked($produit->sur_ordonnance) 
+               class="rounded border-gray-300 text-red-600 shadow-sm focus:border-red-300 focus:ring focus:ring-red-200 focus:ring-opacity-50 h-5 w-5">
+        <span class="ml-3 font-bold text-red-700">Ce médicament nécessite une ordonnance ⚠️</span>
+    </label>
+    <p class="text-xs text-red-500 mt-1 ml-8">Décochez cette case pour rendre le produit en vente libre.</p>
+</div>
 
                         <div>
                             <label class="block text-gray-700 font-bold mb-2">Prix (FCFA) *</label>

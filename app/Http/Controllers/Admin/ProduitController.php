@@ -23,20 +23,24 @@ class ProduitController extends Controller
 
     // 3. ENREGISTRER LE PRODUIT
     public function store(Request $request)
-    {
-        // Validation des données
-        $request->validate([
-            'nom' => 'required',
-            'prix' => 'required|numeric',
-            'stock' => 'required|integer',
-            'date_peremption' => 'required|date',
-        ]);
+{
+    $request->validate([
+        'nom' => 'required',
+        'categorie' => 'required',
+        'prix' => 'required|numeric',
+        'stock' => 'required|integer',
+        'date_peremption' => 'required|date',
+    ]);
 
-        // Création
-        Produit::create($request->all());
+    // On prépare les données
+    $data = $request->all();
+    // Astuce : On force la valeur à TRUE si coché, FALSE sinon
+    $data['sur_ordonnance'] = $request->has('sur_ordonnance');
 
-        return redirect()->route('admin.produits.index')->with('success', 'Produit ajouté avec succès !');
-    }
+    Produit::create($data);
+
+    return redirect()->route('admin.produits.index')->with('success', 'Produit ajouté avec succès !');
+}
 
     //  AFFICHER LE FORMULAIRE DE MODIFICATION
     public function edit($id)
@@ -47,19 +51,25 @@ class ProduitController extends Controller
 
     //  METTRE À JOUR LE PRODUIT
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nom' => 'required',
-            'prix' => 'required|numeric',
-            'stock' => 'required|integer',
-            'date_peremption' => 'required|date',
-        ]);
+{
+    $request->validate([
+        'nom' => 'required',
+        'categorie' => 'required',
+        'prix' => 'required|numeric',
+        'stock' => 'required|integer',
+        'date_peremption' => 'required|date',
+    ]);
 
-        $produit = Produit::findOrFail($id);
-        $produit->update($request->all());
+    $produit = Produit::findOrFail($id);
 
-        return redirect()->route('admin.produits.index')->with('success', 'Produit modifié avec succès !');
-    }
+    $data = $request->all();
+    // Même astuce pour la mise à jour
+    $data['sur_ordonnance'] = $request->has('sur_ordonnance');
+
+    $produit->update($data);
+
+    return redirect()->route('admin.produits.index')->with('success', 'Produit modifié avec succès !');
+}
 
     //  SUPPRIMER
     public function destroy($id)
