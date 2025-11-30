@@ -18,7 +18,6 @@
             </div>
             
             <div class="flex items-center gap-4">
-                <a href="/" class="text-blue-600 text-sm">Voir le site client</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 text-sm">
@@ -72,6 +71,79 @@
             </div>
         </div>
     </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+            
+            <div class="bg-white p-6 rounded-lg shadow border-t-4 border-red-500">
+                <h3 class="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                    ⚠️ Risques de Péremption (3 mois)
+                </h3>
+                
+                @if($alertePeremption->count() > 0)
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-left">
+                            <thead class="bg-red-50 text-red-700">
+                                <tr>
+                                    <th class="p-2">Produit</th>
+                                    <th class="p-2">Date Limite</th>
+                                    <th class="p-2">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($alertePeremption as $prod)
+                                    <tr class="border-b">
+                                        <td class="p-2 font-bold">{{ $prod->nom }}</td>
+                                        <td class="p-2 text-red-600 font-bold">
+                                            {{ \Carbon\Carbon::parse($prod->date_peremption)->format('d/m/Y') }}
+                                            <span class="text-xs text-gray-500">
+                                                (dans {{ \Carbon\Carbon::now()->diffInDays($prod->date_peremption) }} j)
+                                            </span>
+                                        </td>
+                                        <td class="p-2">
+                                            <a href="{{ route('admin.produits.edit', $prod->id) }}" class="text-blue-600 hover:underline">Gérer</a>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                @else
+                    <p class="text-green-600 font-bold bg-green-50 p-4 rounded">
+                        ✅ Aucun produit ne périme bientôt.
+                    </p>
+                @endif
+            </div>
+
+            <div class="bg-white p-6 rounded-lg shadow border-t-4 border-blue-500">
+                <h3 class="font-bold text-xl text-gray-800 mb-4 flex items-center gap-2">
+                    🏆 Produits Phares (Top 5 Ventes)
+                </h3>
+
+                @if($topProduits->count() > 0)
+                    <ul>
+                        @foreach($topProduits as $index => $item)
+                            @if($item->produit) <li class="flex justify-between items-center py-3 border-b last:border-0">
+                                <div class="flex items-center gap-3">
+                                    <span class="bg-gray-200 text-gray-700 font-bold w-6 h-6 flex items-center justify-center rounded-full text-xs">
+                                        {{ $index + 1 }}
+                                    </span>
+                                    <span class="font-semibold text-gray-700">{{ $item->produit->nom }}</span>
+                                </div>
+                                <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
+                                    {{ $item->total_vendus }} vendus
+                                </span>
+                            </li>
+                            @endif
+                        @endforeach
+                    </ul>
+                @else
+                    <p class="text-gray-500 italic">Pas assez de données de vente.</p>
+                @endif
+            </div>
+
+        </div>
+
+        <div class="mt-8">
+             </div>
 
 </body>
 </html>
