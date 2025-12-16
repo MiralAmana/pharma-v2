@@ -15,8 +15,8 @@
                             <th class="p-3">Réf</th>
                             <th class="p-3">Client</th>
                             <th class="p-3">Total</th>
-                            <th class="p-3">Statut</th>
                             <th class="p-3">Preuve</th>
+                            <th class="p-3">Statut</th>
                             <th class="p-3">Actions</th>
                         </tr>
                     </thead>

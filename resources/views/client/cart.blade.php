@@ -99,7 +99,7 @@
                 @endif
 
                 <button type="submit" class="bg-green-600 text-white py-3 px-8 rounded-lg font-bold hover:bg-green-700 shadow transition transform hover:scale-105">
-                    Valider et Payer
+                    Valider
                 </button>
             </form>
         </div>
