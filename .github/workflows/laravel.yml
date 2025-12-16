@@ -18,7 +18,7 @@ jobs:
       uses: shivammathur/setup-php@v2
       with:
         php-version: '8.2'
-        extensions: mbstring, bcmath, intl, pdo_pgsql
+        extensions: mbstring, bcmath, intl, pdo_sqlite # On ajoute sqlite
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -32,5 +32,10 @@ jobs:
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
 
+    # C'EST ICI QUE LA MAGIE OPÈRE :
+    # On force l'utilisation de SQLite en mémoire pour que ça marche partout
     - name: Execute Tests (Unit & Feature)
+      env:
+        DB_CONNECTION: sqlite
+        DB_DATABASE: :memory:
       run: php artisan test
