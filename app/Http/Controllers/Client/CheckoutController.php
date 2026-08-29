@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Commande;
 use App\Models\LigneCommande;
 use App\Models\Produit;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -15,7 +15,7 @@ class CheckoutController extends Controller
     public function valider(Request $request)
     {
         $cart = session()->get('cart');
-        if(!$cart) {
+        if (! $cart) {
             return redirect()->back()->with('error', 'Panier vide.');
         }
 
@@ -26,7 +26,7 @@ class CheckoutController extends Controller
         foreach ($cart as $id => $details) {
             $produit = $produits->get($id);
 
-            if (!$produit) {
+            if (! $produit) {
                 return redirect()->back()->with('error', 'Un produit de votre panier n\'existe plus. Merci de le retirer.');
             }
 
@@ -47,7 +47,7 @@ class CheckoutController extends Controller
         $path = null;
         if ($request->hasFile('ordonnance')) {
             $file = $request->file('ordonnance');
-            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $filename = Str::uuid().'.'.$file->getClientOriginalExtension();
             $path = $file->storeAs('ordonnances', $filename, 'local');
         }
 
@@ -62,7 +62,7 @@ class CheckoutController extends Controller
             'user_id' => Auth::id(),
             'total' => $total,
             'statut' => 'en_attente',
-            'reference' => 'CMD-' . strtoupper(Str::random(6)),
+            'reference' => 'CMD-'.strtoupper(Str::random(6)),
             'image_ordonnance' => $path, // <--- On sauvegarde le chemin ici
         ]);
 

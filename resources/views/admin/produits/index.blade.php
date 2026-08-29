@@ -23,6 +23,7 @@
                 <table class="w-full text-left border-collapse">
                     <thead class="bg-gray-100 border-b-2 border-gray-200">
                         <tr>
+                            <th class="p-3 font-semibold text-gray-600">Image</th>
                             <th class="p-3 font-semibold text-gray-600">Nom</th>
                             <th class="p-3 font-semibold text-gray-600">Prix</th>
                             <th class="p-3 font-semibold text-gray-600">Stock</th>
@@ -33,6 +34,13 @@
                     <tbody>
                         @foreach($produits as $produit)
                         <tr class="border-b hover:bg-gray-50 transition">
+                            <td class="p-3">
+                                @if($produit->image)
+                                    <img src="{{ asset('storage/' . $produit->image) }}" alt="{{ $produit->nom }}" class="w-12 h-12 object-cover rounded">
+                                @else
+                                    <span class="w-12 h-12 flex items-center justify-center bg-gray-100 rounded text-gray-300 text-xs">Aucune</span>
+                                @endif
+                            </td>
                             <td class="p-3 font-bold text-gray-800">{{ $produit->nom }}</td>
                             <td class="p-3">{{ $produit->prix }} FCFA</td>
                             <td class="p-3">
@@ -69,6 +77,10 @@
                         Aucun produit en stock. Commencez par en ajouter un !
                     </div>
                 @endif
+
+                <div class="mt-4">
+                    {{ $produits->links() }}
+                </div>
             </div>
         </div>
     </div>

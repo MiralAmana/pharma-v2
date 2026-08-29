@@ -8,7 +8,7 @@
     <div class="py-12 pb-20"> <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 
-                <form action="{{ route('admin.produits.store') }}" method="POST" class="p-6">
+                <form action="{{ route('admin.produits.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
                     @csrf
 
                     @if ($errors->any())
@@ -64,6 +64,11 @@
                         <div class="col-span-1 md:col-span-2">
                             <label class="block text-gray-700 font-bold mb-2">Description</label>
                             <textarea name="description" class="w-full border-2 border-gray-300 rounded px-3 py-2" rows="3" placeholder="Description courte...">{{ old('description') }}</textarea>
+                        </div>
+
+                        <div class="col-span-1 md:col-span-2">
+                            <label class="block text-gray-700 font-bold mb-2">Photo du produit</label>
+                            <input type="file" name="image" accept="image/png,image/jpeg,image/webp" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                         </div>
 
                     </div>

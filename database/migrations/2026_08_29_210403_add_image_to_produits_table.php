@@ -9,18 +9,21 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
+        // Colonne référencée dans le code (Produit::$fillable, CartController) mais jamais migrée jusqu'ici.
         Schema::table('produits', function (Blueprint $table) {
-            // On ajoute la catégorie après le nom
-            $table->string('categorie')->default('Médicaments')->after('nom');
+            $table->string('image')->nullable()->after('description');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('produits', function (Blueprint $table) {
-            $table->dropColumn('categorie');
+            $table->dropColumn('image');
         });
     }
 };

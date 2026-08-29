@@ -6,13 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreProduitRequest;
 use App\Http\Requests\UpdateProduitRequest;
 use App\Models\Produit;
+use Illuminate\Support\Facades\Storage;
 
 class ProduitController extends Controller
 {
     // 1. LISTE DES PRODUITS
     public function index()
     {
-        $produits = Produit::orderBy('nom', 'asc')->get();
+        $produits = Produit::orderBy('nom', 'asc')->paginate(15);
+
         return view('admin.produits.index', compact('produits'));
     }
 
@@ -30,6 +32,10 @@ class ProduitController extends Controller
         // Astuce : On force la valeur à TRUE si coché, FALSE sinon
         $data['sur_ordonnance'] = $request->has('sur_ordonnance');
 
+        if ($request->hasFile('image')) {
+            $data['image'] = $request->file('image')->store('produits', 'public');
+        }
+
         Produit::create($data);
 
         return redirect()->route('admin.produits.index')->with('success', 'Produit ajouté avec succès !');
@@ -39,6 +45,7 @@ class ProduitController extends Controller
     public function edit($id)
     {
         $produit = Produit::findOrFail($id);
+
         return view('admin.produits.edit', compact('produit'));
     }
 
@@ -52,6 +59,13 @@ class ProduitController extends Controller
         // Même astuce pour la mise à jour
         $data['sur_ordonnance'] = $request->has('sur_ordonnance');
 
+        if ($request->hasFile('image')) {
+            if ($produit->image) {
+                Storage::disk('public')->delete($produit->image);
+            }
+            $data['image'] = $request->file('image')->store('produits', 'public');
+        }
+
         $produit->update($data);
 
         return redirect()->route('admin.produits.index')->with('success', 'Produit modifié avec succès !');
@@ -61,6 +75,7 @@ class ProduitController extends Controller
     public function destroy($id)
     {
         Produit::findOrFail($id)->delete();
+
         return back()->with('success', 'Produit supprimé.');
     }
 }

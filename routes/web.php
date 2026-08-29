@@ -1,36 +1,40 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Client\CatalogueController;
-use App\Http\Controllers\Client\CartController;
-use App\Http\Controllers\Client\CheckoutController;
-use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CommandeController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProduitController;
+use App\Http\Controllers\Client\CartController;
+use App\Http\Controllers\Client\CatalogueController;
+use App\Http\Controllers\Client\CheckoutController;
 use App\Http\Controllers\Client\MesCommandesController;
 use App\Http\Controllers\OrdonnanceController;
+use App\Http\Controllers\ProfileController;
+use Illuminate\Support\Facades\Route;
 
 // 1. PAGE D'ACCUEIL (Accessible à tout le monde)
 Route::get('/', [CatalogueController::class, 'index'])->name('home');
 
 // 2. GROUPE POUR TOUS LES UTILISATEURS CONNECTÉS (Clients + Gérants)
 Route::middleware('auth')->group(function () {
-    
+
     // Profil (Par défaut Laravel)
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // --- FONCTIONNALITÉS CLIENT ---
-    // Panier
-    Route::get('/mon-panier', [CartController::class, 'index'])->name('cart.index');
-    Route::post('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-    Route::post('/cart/{id}/decrease', [CartController::class, 'decrease'])->name('cart.decrease');
-    Route::delete('/remove-from-cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    // Panier (throttle : évite qu'un script n'épuise le stock en boucle)
+    Route::middleware('throttle:60,1')->group(function () {
+        Route::get('/mon-panier', [CartController::class, 'index'])->name('cart.index');
+        Route::post('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+        Route::post('/cart/{id}/decrease', [CartController::class, 'decrease'])->name('cart.decrease');
+        Route::delete('/remove-from-cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    });
 
     // Validation Commande
-    Route::post('/checkout/valider', [CheckoutController::class, 'valider'])->name('checkout.valider');
+    Route::post('/checkout/valider', [CheckoutController::class, 'valider'])
+        ->middleware('throttle:10,1')
+        ->name('checkout.valider');
 
     // Suivi des commandes (Historique Client)
     Route::get('/mes-commandes', [MesCommandesController::class, 'index'])->name('client.commandes.index');

@@ -12,8 +12,8 @@ class MesCommandesController extends Controller
     {
         // On récupère SEULEMENT les commandes de l'utilisateur connecté
         $commandes = Commande::where('user_id', Auth::id())
-                             ->orderBy('created_at', 'desc') // Les plus récentes en haut
-                             ->get();
+            ->orderBy('created_at', 'desc') // Les plus récentes en haut
+            ->paginate(10);
 
         return view('client.commandes.index', compact('commandes'));
     }

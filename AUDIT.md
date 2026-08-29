@@ -231,5 +231,43 @@ Créé les factories manquantes ([ProduitFactory](database/factories/ProduitFact
 ### ✅ Fichier mort supprimé
 `resources/views/dashboard.blade.php` (scaffold Breeze par défaut) n'était plus jamais rendu depuis que la route `dashboard` pointe vers `DashboardController::index` → vue `admin.dashboard`. Confirmé qu'aucun `view('dashboard')` n'existe dans le code, supprimé.
 
+### ✅ Pagination
+Catalogue (12/page), liste produits admin (15/page), commandes admin (15/page) et commandes client (10/page) sont désormais paginées (`->paginate()` + `{{ $x->links() }}`). Vérifié en conditions réelles : 24 produits → page 1 affiche 12 résultats, `?page=2` affiche les 12 restants, compteur "24 résultat(s)" basé sur `->total()` (pas la page courante).
+
+---
+
+## Améliorations (au-delà de l'audit) — 2026-08-29
+
+### Photo produit (fonctionnalité manquante)
+La colonne `produits.image` était référencée dans le code (`$fillable`, `CartController`) mais **n'existait même pas en base** — jamais migrée. Ajoutée ([migration](database/migrations/2026_08_29_210403_add_image_to_produits_table.php)), plus :
+- Upload dans `create`/`edit` (validation `image|mimes:jpg,jpeg,png,webp|max:2048`), affichage dans le catalogue et la liste admin, placeholder 💊 si absente.
+- Remplacer une photo supprime l'ancienne du disque (`Storage::disk('public')->delete()`).
+- `php artisan storage:link` exécuté (nécessaire sur tout nouvel environnement).
+- Testé : upload à la création, remplacement avec suppression de l'ancien fichier ([ProduitManagementTest.php](tests/Feature/Admin/ProduitManagementTest.php)).
+
+### Notifications client
+[CommandeStatutMisAJour](app/Notifications/CommandeStatutMisAJour.php) — le client reçoit désormais un mail (canal `mail`, `MAIL_MAILER=log` en dev) quand sa commande est validée ou annulée. Vérifié en conditions réelles : mail loggé avec le bon contenu et lien vers `/mes-commandes`. Testé : notification envoyée une seule fois même après double-validation.
+
+### Traçabilité admin
+Ajout de `commandes.traite_par_id` / `traite_le` ([migration](database/migrations/2026_08_29_210337_add_traitement_tracking_to_commandes_table.php)) — renseignés dans `CommandeController::valider`/`annuler`, affichés dans la liste admin ("par X le d/m/Y H:i"). Aucune trace de qui validait/annulait auparavant.
+
+### Index DB manquants
+`produits.categorie`, `produits.stock`, `commandes.statut`, `commandes.user_id` (colonnes filtrées à chaque requête catalogue/dashboard/mes-commandes) n'avaient aucun index. Postgres ne crée pas d'index automatique pour une simple contrainte de clé étrangère (contrairement à MySQL) — ajoutés explicitement.
+
+### Rate limiting
+`cart.*` (`throttle:60,1`) et `checkout.valider` (`throttle:10,1`) — rien n'empêchait un script d'épuiser un stock en boucle, contrairement au login déjà protégé par Breeze.
+
+### Gate centralisée pour le rôle gérant
+`Gate::define('gerant', ...)` dans [AppServiceProvider](app/Providers/AppServiceProvider.php), utilisée par `IsAdmin` (`auth()->user()->can('gerant')`) au lieu d'une comparaison de string dupliquable ailleurs.
+
+### `npm audit` : 10 vulnérabilités → 0
+Toutes dans les dépendances de build (vite, rollup, postcss, axios via des sous-dépendances de tooling — jamais exécutées en production). Corrigées avec `npm audit fix` (sans `--force`), assets reconstruits, testés.
+
+### Laravel Pint
+Présent en dépendance dev mais jamais exécuté. `vendor/bin/pint` a corrigé 25 fichiers (style uniquement, aucun changement fonctionnel — vérifié par diff). Ajouté comme étape CI (`pint --test`) dans [tests.yml](.github/workflows/tests.yml).
+
+### Docker (Laravel Sail)
+`laravel/sail` était déjà en dépendance dev mais jamais installé. `php artisan sail:install --with=pgsql` a généré [compose.yaml](compose.yaml) (app PHP 8.4 + PostgreSQL), validé avec `docker compose config`. **Attention** : l'installeur modifie `.env` (`DB_HOST=pgsql`) et `phpunit.xml` (retire `DB_CONNECTION=sqlite`, ce qui aurait cassé la CI et les tests locaux) — les deux ont été restaurés à leurs valeurs de travail. Pour utiliser Sail : `./vendor/bin/sail up`, en pointant `.env` vers `DB_HOST=pgsql` au lieu du Postgres local.
+
 ### Non traité (signalé, pas corrigé)
-- **Pas de pagination** sur le catalogue, la liste produits admin, ni les commandes (client/admin) — non bloquant au volume actuel.
+- **Pagination en anglais** ("Next »" / "« Previous") — `APP_LOCALE=en` alors que le reste de l'UI est en français. Publier les vues de pagination (`php artisan vendor:publish --tag=laravel-pagination`) ou passer `APP_LOCALE=fr` pour corriger, si souhaité.

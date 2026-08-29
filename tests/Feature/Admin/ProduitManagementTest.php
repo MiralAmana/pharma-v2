@@ -5,6 +5,8 @@ namespace Tests\Feature\Admin;
 use App\Models\Produit;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class ProduitManagementTest extends TestCase
@@ -100,5 +102,44 @@ class ProduitManagementTest extends TestCase
 
         $response->assertRedirect();
         $this->assertSoftDeleted('produits', ['id' => $produit->id]);
+    }
+
+    public function test_un_gerant_peut_uploader_une_photo_a_la_creation(): void
+    {
+        Storage::fake('public');
+
+        $response = $this->actingAs($this->gerant())->post(route('admin.produits.store'), [
+            'nom' => 'Doliprane 1000mg',
+            'categorie' => 'Médicaments',
+            'prix' => 1500,
+            'stock' => 50,
+            'date_peremption' => now()->addYear()->format('Y-m-d'),
+            'image' => UploadedFile::fake()->create('photo.jpg', 100, 'image/jpeg'),
+        ]);
+
+        $response->assertRedirect(route('admin.produits.index'));
+        $produit = Produit::where('nom', 'Doliprane 1000mg')->firstOrFail();
+        $this->assertNotNull($produit->image);
+        Storage::disk('public')->assertExists($produit->image);
+    }
+
+    public function test_remplacer_la_photo_supprime_l_ancienne(): void
+    {
+        Storage::fake('public');
+        $ancienChemin = 'produits/ancienne.jpg';
+        Storage::disk('public')->put($ancienChemin, 'contenu-fictif');
+        $produit = Produit::factory()->create(['image' => $ancienChemin]);
+
+        $this->actingAs($this->gerant())->put(route('admin.produits.update', $produit->id), [
+            'nom' => $produit->nom,
+            'categorie' => $produit->categorie,
+            'prix' => $produit->prix,
+            'stock' => $produit->stock,
+            'date_peremption' => $produit->date_peremption->format('Y-m-d'),
+            'image' => UploadedFile::fake()->create('nouvelle.jpg', 100, 'image/jpeg'),
+        ]);
+
+        Storage::disk('public')->assertMissing($ancienChemin);
+        Storage::disk('public')->assertExists($produit->fresh()->image);
     }
 }

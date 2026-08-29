@@ -55,4 +55,16 @@ class CatalogueTest extends TestCase
         $response->assertOk();
         $response->assertSee('Ordonnance');
     }
+
+    public function test_le_catalogue_est_pagine_a_12_par_page(): void
+    {
+        Produit::factory()->count(13)->create();
+
+        $premierePage = $this->get('/');
+        $deuxiemePage = $this->get('/?page=2');
+
+        $premierePage->assertOk();
+        $this->assertCount(12, $premierePage->viewData('produits'));
+        $this->assertCount(1, $deuxiemePage->viewData('produits'));
+    }
 }

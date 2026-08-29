@@ -9,26 +9,32 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up()
+    public function up(): void
     {
-        // 1. Sur la table PRODUITS : un indicateur (Oui/Non)
         Schema::table('produits', function (Blueprint $table) {
-            $table->boolean('sur_ordonnance')->default(false)->after('categorie');
+            $table->index('categorie');
+            $table->index('stock');
         });
 
-        // 2. Sur la table COMMANDES : le chemin du fichier image
         Schema::table('commandes', function (Blueprint $table) {
-            $table->string('image_ordonnance')->nullable()->after('reference');
+            $table->index('statut');
+            $table->index('user_id');
         });
     }
 
-    public function down()
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
     {
         Schema::table('produits', function (Blueprint $table) {
-            $table->dropColumn('sur_ordonnance');
+            $table->dropIndex(['categorie']);
+            $table->dropIndex(['stock']);
         });
+
         Schema::table('commandes', function (Blueprint $table) {
-            $table->dropColumn('image_ordonnance');
+            $table->dropIndex(['statut']);
+            $table->dropIndex(['user_id']);
         });
     }
 };

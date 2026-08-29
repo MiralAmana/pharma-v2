@@ -6,7 +6,9 @@ use App\Models\Commande;
 use App\Models\LigneCommande;
 use App\Models\Produit;
 use App\Models\User;
+use App\Notifications\CommandeStatutMisAJour;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
 use Tests\TestCase;
 
 class CommandeManagementTest extends TestCase
@@ -108,5 +110,45 @@ class CommandeManagementTest extends TestCase
 
         $this->assertSame('annulée', $commande->fresh()->statut);
         $this->assertSame(10, $produit->fresh()->stock);
+    }
+
+    public function test_valider_enregistre_qui_et_quand_puis_notifie_le_client(): void
+    {
+        Notification::fake();
+        $gerant = $this->gerant();
+        $commande = Commande::factory()->create(['statut' => 'en_attente']);
+
+        $this->actingAs($gerant)->post(route('admin.valider', $commande->id));
+
+        $commande->refresh();
+        $this->assertSame($gerant->id, $commande->traite_par_id);
+        $this->assertNotNull($commande->traite_le);
+        Notification::assertSentTo($commande->user, CommandeStatutMisAJour::class);
+    }
+
+    public function test_annuler_enregistre_qui_et_quand_puis_notifie_le_client(): void
+    {
+        Notification::fake();
+        $gerant = $this->gerant();
+        $commande = Commande::factory()->create(['statut' => 'en_attente']);
+
+        $this->actingAs($gerant)->post(route('admin.annuler', $commande->id));
+
+        $commande->refresh();
+        $this->assertSame($gerant->id, $commande->traite_par_id);
+        $this->assertNotNull($commande->traite_le);
+        Notification::assertSentTo($commande->user, CommandeStatutMisAJour::class);
+    }
+
+    public function test_valider_deux_fois_ne_notifie_pas_a_nouveau(): void
+    {
+        Notification::fake();
+        $gerant = $this->gerant();
+        $commande = Commande::factory()->create(['statut' => 'en_attente']);
+
+        $this->actingAs($gerant)->post(route('admin.valider', $commande->id));
+        $this->actingAs($gerant)->post(route('admin.valider', $commande->id));
+
+        Notification::assertSentToTimes($commande->user, CommandeStatutMisAJour::class, 1);
     }
 }

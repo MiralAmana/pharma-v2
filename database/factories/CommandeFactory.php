@@ -20,7 +20,7 @@ class CommandeFactory extends Factory
             'user_id' => User::factory(),
             'total' => fake()->numberBetween(1000, 50000),
             'statut' => 'en_attente',
-            'reference' => 'CMD-' . strtoupper(Str::random(6)),
+            'reference' => 'CMD-'.strtoupper(Str::random(6)),
             'image_ordonnance' => null,
         ];
     }

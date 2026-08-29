@@ -95,14 +95,19 @@
         
         <div class="flex justify-between items-center mb-6 border-b pb-4">
             <h2 class="text-2xl font-bold text-gray-800">Nos Produits Disponibles</h2>
-            <span class="text-gray-500 text-sm">{{ count($produits) }} résultat(s)</span>
+            <span class="text-gray-500 text-sm">{{ $produits->total() }} résultat(s)</span>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
             @forelse($produits as $produit)
                 <div class="bg-white rounded-lg shadow hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col h-full">
-                
-    
+
+                    @if($produit->image)
+                        <img src="{{ asset('storage/' . $produit->image) }}" alt="{{ $produit->nom }}" class="w-full h-40 object-cover">
+                    @else
+                        <div class="w-full h-40 bg-gray-50 flex items-center justify-center text-4xl">💊</div>
+                    @endif
+
                     <div class="p-5 flex flex-col flex-grow">
                         
                         <div class="flex flex-wrap gap-2 mb-3">
@@ -153,6 +158,10 @@
                     </a>
                 </div>
             @endforelse
+        </div>
+
+        <div class="mt-8">
+            {{ $produits->links() }}
         </div>
     </main>
 

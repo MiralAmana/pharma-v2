@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Commande;
 use App\Models\Produit;
-use Illuminate\Http\Request;
+use App\Notifications\CommandeStatutMisAJour;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CommandeController extends Controller
@@ -13,20 +14,21 @@ class CommandeController extends Controller
     // 1. VOIR LA LISTE DES COMMANDES
     public function index()
     {
-        $commandes = Commande::with(['user', 'lignes.produit'])->orderBy('created_at', 'desc')->get();
+        $commandes = Commande::with(['user', 'lignes.produit', 'traitePar'])->orderBy('created_at', 'desc')->paginate(15);
+
         return view('admin.commandes.index', compact('commandes'));
     }
 
     // 2. VALIDER LA COMMANDE
     public function valider($id)
     {
-        $dejaValidee = DB::transaction(function () use ($id) {
+        $commande = DB::transaction(function () use ($id) {
             // Verrou sur la commande et les produits concernés le temps de la transaction,
             // pour éviter qu'une validation concurrente ne déduise le stock deux fois.
             $commande = Commande::with('lignes')->lockForUpdate()->findOrFail($id);
 
             if ($commande->statut === 'validée') {
-                return true;
+                return null;
             }
 
             foreach ($commande->lignes as $ligne) {
@@ -37,14 +39,18 @@ class CommandeController extends Controller
             }
 
             $commande->statut = 'validée';
+            $commande->traite_par_id = Auth::id();
+            $commande->traite_le = now();
             $commande->save();
 
-            return false;
+            return $commande;
         });
 
-        if ($dejaValidee) {
+        if (! $commande) {
             return back()->with('error', 'Déjà validée.');
         }
+
+        $commande->user->notify(new CommandeStatutMisAJour($commande));
 
         return back()->with('success', 'Commande validée !');
     }
@@ -52,7 +58,7 @@ class CommandeController extends Controller
     // 3. ANNULER UNE COMMANDE (ET REMETTRE EN STOCK SI NÉCESSAIRE)
     public function annuler($id)
     {
-        DB::transaction(function () use ($id) {
+        $commande = DB::transaction(function () use ($id) {
             $commande = Commande::with('lignes')->lockForUpdate()->findOrFail($id);
 
             // Si la commande était DÉJÀ validée, cela veut dire qu'on avait déjà déduit le stock.
@@ -67,8 +73,14 @@ class CommandeController extends Controller
             }
 
             $commande->statut = 'annulée';
+            $commande->traite_par_id = Auth::id();
+            $commande->traite_le = now();
             $commande->save();
+
+            return $commande;
         });
+
+        $commande->user->notify(new CommandeStatutMisAJour($commande));
 
         return back()->with('success', 'Commande annulée ');
     }

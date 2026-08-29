@@ -54,6 +54,11 @@
                                 @else
                                     <span class="text-red-600 font-bold">Annulée</span>
                                 @endif
+                                @if($commande->traitePar)
+                                    <div class="text-xs text-gray-400 mt-1">
+                                        par {{ $commande->traitePar->name }} le {{ $commande->traite_le->format('d/m/Y H:i') }}
+                                    </div>
+                                @endif
                             </td>
                             <td class="p-3 flex gap-2">
                                 @if($commande->statut == 'en_attente')
@@ -74,6 +79,9 @@
                     </tbody>
                 </table>
 
+                <div class="mt-4">
+                    {{ $commandes->links() }}
+                </div>
             </div>
         </div>
     </div>

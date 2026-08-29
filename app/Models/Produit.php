@@ -28,7 +28,7 @@ class Produit extends Model
         'stock',
         'image',
         'date_peremption',
-        'sur_ordonnance'
+        'sur_ordonnance',
     ];
 
     // Indique que ces colonnes sont des dates (pour le calcul de péremption)

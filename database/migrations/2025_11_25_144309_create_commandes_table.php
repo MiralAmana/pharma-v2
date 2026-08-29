@@ -10,16 +10,16 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up()
-{
-    Schema::create('commandes', function (Blueprint $table) {
-        $table->id();
-        $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Le client
-        $table->decimal('total', 10, 2); // Montant total
-        $table->string('statut')->default('en_attente'); // Statut par défaut
-        $table->string('reference')->unique(); // Numéro de commande (ex: CMD-123)
-        $table->timestamps();
-    });
-}
+    {
+        Schema::create('commandes', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // Le client
+            $table->decimal('total', 10, 2); // Montant total
+            $table->string('statut')->default('en_attente'); // Statut par défaut
+            $table->string('reference')->unique(); // Numéro de commande (ex: CMD-123)
+            $table->timestamps();
+        });
+    }
 
     /**
      * Reverse the migrations.

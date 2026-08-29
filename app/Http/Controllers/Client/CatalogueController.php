@@ -22,7 +22,7 @@ class CatalogueController extends Controller
             $query->where('categorie', $request->categorie);
         }
 
-        $produits = $query->get();
+        $produits = $query->paginate(12)->withQueryString();
 
         return view('welcome', compact('produits'));
     }

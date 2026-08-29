@@ -23,5 +23,4 @@ class LigneCommande extends Model
     {
         return $this->belongsTo(Produit::class)->withTrashed();
     }
-    
 } // <--- TOUT LE CODE DOIT ETRE AU DESSUS DE CETTE ACCOLADE
