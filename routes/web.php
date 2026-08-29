@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     // Panier
     Route::get('/mon-panier', [CartController::class, 'index'])->name('cart.index');
     Route::post('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::post('/cart/{id}/decrease', [CartController::class, 'decrease'])->name('cart.decrease');
     Route::delete('/remove-from-cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
     // Validation Commande

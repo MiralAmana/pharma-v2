@@ -34,12 +34,9 @@
                         <div class="mb-4">
     <label class="block text-gray-700 font-bold mb-2">Catégorie *</label>
     <select name="categorie" class="w-full border-2 border-gray-300 rounded px-3 py-2 focus:border-blue-500" required>
-        <option value="Médicaments" {{ old('categorie', $produit->categorie) == 'Médicaments' ? 'selected' : '' }}>Médicaments</option>
-        <option value="Santé & Bien-être" {{ old('categorie', $produit->categorie) == 'Santé & Bien-être' ? 'selected' : '' }}>Santé & Bien-être</option>
-        <option value="Hygiène & Soins" {{ old('categorie', $produit->categorie) == 'Hygiène & Soins' ? 'selected' : '' }}>Hygiène & Soins</option>
-        <option value="Matériel Médical" {{ old('categorie', $produit->categorie) == 'Matériel Médical' ? 'selected' : '' }}>Matériel Médical</option>
-        <option value="Bébé & Maman" {{ old('categorie', $produit->categorie) == 'Bébé & Maman' ? 'selected' : '' }}>Bébé & Maman</option>
-        <option value="Cosmétiques" {{ old('categorie', $produit->categorie) == 'Cosmétiques' ? 'selected' : '' }}>Cosmétiques</option>
+        @foreach(\App\Models\Produit::CATEGORIES as $cat)
+            <option value="{{ $cat }}" {{ old('categorie', $produit->categorie) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+        @endforeach
     </select>
 </div>
 <div class="mb-4 bg-red-50 p-4 rounded border border-red-200">

@@ -43,6 +43,21 @@
         </div>
     </nav>
 
+    @if(session('success') || session('error'))
+        <div class="max-w-7xl mx-auto px-4 pt-4">
+            @if(session('success'))
+                <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    {{ session('error') }}
+                </div>
+            @endif
+        </div>
+    @endif
+
     <header class="bg-green-600 pt-10 pb-16 text-center text-white shadow-inner">
         <h1 class="text-4xl font-bold mb-4">Bienvenue à la Pharmacie Aliou Baldé</h1>
         <p class="mb-8 text-lg opacity-90">Trouvez vos médicaments et faites-vous livrer à domicile.</p>
@@ -65,18 +80,7 @@
                     Tout voir
                 </a>
 
-                @php
-                    $cats = [
-                        'Médicaments', 
-                        'Santé & Bien-être', 
-                        'Hygiène & Soins', 
-                        'Matériel Médical', 
-                        'Bébé & Maman', 
-                        'Cosmétiques'
-                    ];
-                @endphp
-
-                @foreach($cats as $cat)
+                @foreach(\App\Models\Produit::CATEGORIES as $cat)
                     <a href="{{ route('home', ['categorie' => $cat]) }}" 
                        class="px-4 py-2 rounded-full text-sm font-bold transition shadow-sm border border-transparent
                        {{ request('categorie') == $cat ? 'bg-white text-green-700' : 'bg-green-700 text-white border-green-400 hover:bg-green-800' }}">

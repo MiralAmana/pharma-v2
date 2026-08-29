@@ -27,6 +27,20 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
+        // Les clients (rôle par défaut) sont redirigés vers l'accueil, pas le tableau de bord gérant.
+        $response->assertRedirect(route('home', absolute: false));
+    }
+
+    public function test_gerant_is_redirected_to_dashboard(): void
+    {
+        $gerant = User::factory()->create(['role' => 'gerant']);
+
+        $response = $this->post('/login', [
+            'email' => $gerant->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
     }
 

@@ -10,6 +10,16 @@ class Produit extends Model
 {
     use HasFactory, SoftDeletes; // <--- 2. AJOUTE "SoftDeletes" ICI
 
+    // Source unique des catégories, utilisée par le catalogue et les formulaires admin.
+    public const CATEGORIES = [
+        'Médicaments',
+        'Santé & Bien-être',
+        'Hygiène & Soins',
+        'Matériel Médical',
+        'Bébé & Maman',
+        'Cosmétiques',
+    ];
+
     protected $fillable = [
         'nom',
         'categorie',

@@ -13,7 +13,7 @@ class CommandeController extends Controller
     // 1. VOIR LA LISTE DES COMMANDES
     public function index()
     {
-        $commandes = Commande::with('user')->orderBy('created_at', 'desc')->get();
+        $commandes = Commande::with(['user', 'lignes.produit'])->orderBy('created_at', 'desc')->get();
         return view('admin.commandes.index', compact('commandes'));
     }
 

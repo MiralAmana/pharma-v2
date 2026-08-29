@@ -168,3 +168,53 @@ Vérifié en conditions réelles : édition du prix d'un produit existant sans r
 6. ~~Corriger le format de `date_peremption` + afficher `$errors` dans les formulaires produit~~ — **fait le 2026-08-29**.
 
 Tous les points identifiés dans cet audit sont corrigés et vérifiés en conditions réelles.
+
+---
+
+## Critique générale du projet (au-delà de la sécurité) — corrigée le 2026-08-29
+
+Une revue plus large (architecture, tests, logique métier) a identifié et corrigé les points suivants :
+
+### ✅ Suite de tests réellement cassée
+3 des 25 tests échouaient en pratique (vérifié par exécution) :
+- `RegistrationTest` postait sans `telephone`/`adresse`, désormais requis par [RegisteredUserController.php](app/Http/Controllers/Auth/RegisteredUserController.php) → **corrigé** : le test envoie ces champs.
+- `AuthenticationTest` attendait une redirection vers `/dashboard`, alors qu'un client (rôle par défaut) est redirigé vers `/` → **corrigé** : assertion mise à jour vers `route('home')`, et un test `test_gerant_is_redirected_to_dashboard` ajouté pour couvrir l'autre branche.
+- `ExampleTest` plantait sur `no such table: produits` (pas de migrations) → **corrigé** : ajout de `RefreshDatabase`.
+
+**26/26 tests passent désormais** ([tests/Feature/Auth/AuthenticationTest.php](tests/Feature/Auth/AuthenticationTest.php), [RegistrationTest.php](tests/Feature/Auth/RegistrationTest.php), [ExampleTest.php](tests/Feature/ExampleTest.php)). La CI (`.github/workflows/tests.yml`) devrait maintenant être verte.
+
+### ✅ CDN Tailwind restant sur 4 pages
+L'audit initial n'avait corrigé que `client/cart.blade.php`. Retiré aussi de [profile/edit.blade.php](resources/views/profile/edit.blade.php), [client/commandes/index.blade.php](resources/views/client/commandes/index.blade.php), [client/success.blade.php](resources/views/client/success.blade.php) et [admin/dashboard.blade.php](resources/views/admin/dashboard.blade.php) (`@vite` partout).
+
+### ✅ `admin/dashboard.blade.php` reconstruit sur le layout partagé
+Était une page HTML autonome dupliquant nav/déconnexion. Utilise maintenant `<x-app-layout>` comme les autres pages admin ; ajout des liens "Commandes"/"Produits" dans [layouts/navigation.blade.php](resources/views/layouts/navigation.blade.php) (visible uniquement par les gérants, seuls utilisateurs de ce layout).
+
+### ✅ Catégories centralisées
+Constante `Produit::CATEGORIES` ([Produit.php](app/Models/Produit.php)) — source unique utilisée par `welcome.blade.php` et les `<select>` de `create.blade.php`/`edit.blade.php`, qui codaient chacun leur propre liste.
+
+### ✅ Validation `ProduitController` déplacée dans des `FormRequest`
+[StoreProduitRequest.php](app/Http/Requests/StoreProduitRequest.php) et [UpdateProduitRequest.php](app/Http/Requests/UpdateProduitRequest.php), cohérents avec le reste de l'app (`LoginRequest`, `ProfileUpdateRequest`). La catégorie est désormais validée contre `Produit::CATEGORIES` (`Rule::in`).
+
+### ✅ Aucune vérification de stock à l'ajout au panier
+[CartController::addToCart](app/Http/Controllers/Client/CartController.php) refuse désormais d'ajouter au-delà du stock disponible, avec message d'erreur explicite. Vérifié : 4 clics sur un produit à stock 3 → quantité plafonnée à 3, message "Stock insuffisant" affiché.
+
+### ✅ Pas de revérification stock/prix au checkout
+[CheckoutController::valider](app/Http/Controllers/Client/CheckoutController.php) revérifie désormais le stock et recalcule le total à partir des prix actuels en base (au lieu du prix figé en session au moment de l'ajout au panier). L'exigence d'ordonnance pour un produit concerné est aussi désormais vérifiée côté serveur (`required` conditionnel), pas seulement côté client.
+
+### ✅ Panier sans gestion de quantité
+Ajout de boutons +/- dans [client/cart.blade.php](resources/views/client/cart.blade.php) et d'une route/méthode `cart.decrease` ([CartController::decrease](app/Http/Controllers/Client/CartController.php)).
+
+### ✅ Logique métier dans les vues (violation MVC)
+Le calcul `needsPrescription` (`\App\Models\Produit::find()` dans une boucle `@php`) a été déplacé de `cart.blade.php` vers `CartController::index()` et `CheckoutController::valider()`.
+
+### ✅ Détail des commandes invisible pour l'admin
+[admin/commandes/index.blade.php](resources/views/admin/commandes/index.blade.php) affiche désormais la liste des produits/quantités de chaque commande (`Commande::with(['user', 'lignes.produit'])`), plus seulement le total.
+
+### ✅ Messages flash absents sur la page d'accueil
+`welcome.blade.php` n'affichait aucun message de succès/erreur (découvert en testant le refus de stock) — bannière ajoutée, cohérente avec les autres pages.
+
+### Non traité (signalé, pas corrigé)
+- **Pas de tests métier** : les 26 tests couvrent uniquement le scaffold Breeze (auth, profil) — aucun test sur `CatalogueController`, `CartController`, `CheckoutController`, `CommandeController`, `ProduitController`, `OrdonnanceController`, ni sur `IsAdmin`.
+- **Deux workflows CI redondants** : [laravel.yml](.github/workflows/laravel.yml) ne fait qu'un `php artisan about` sans lancer les tests, en plus de [tests.yml](.github/workflows/tests.yml) qui les lance réellement — à consolider.
+- **Pas de pagination** sur le catalogue, la liste produits admin, ni les commandes (client/admin) — non bloquant au volume actuel.
+- **`resources/views/dashboard.blade.php`** (scaffold Breeze par défaut) n'est plus jamais rendu depuis que la route `dashboard` pointe vers `DashboardController` — fichier mort, à supprimer si confirmé inutile.

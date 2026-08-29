@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Commande Confirmée</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50 h-screen flex items-center justify-center">
     <div class="bg-white p-8 rounded shadow-lg text-center max-w-lg">

@@ -14,6 +14,7 @@
                         <tr class="bg-gray-100">
                             <th class="p-3">Réf</th>
                             <th class="p-3">Client</th>
+                            <th class="p-3">Contenu</th>
                             <th class="p-3">Total</th>
                             <th class="p-3">Preuve</th>
                             <th class="p-3">Statut</th>
@@ -22,10 +23,20 @@
                     </thead>
                     <tbody>
                         @foreach($commandes as $commande)
-                        <tr class="border-b">
+                        <tr class="border-b align-top">
                             <td class="p-3">{{ $commande->reference }}</td>
                             <td class="p-3">{{ $commande->user->name }}</td>
-                            <td class="p-3">{{ $commande->total }} FCFA</td>
+                            <td class="p-3">
+                                <ul class="text-sm space-y-1">
+                                    @foreach($commande->lignes as $ligne)
+                                        <li>
+                                            <span class="font-semibold">{{ $ligne->quantite }}×</span>
+                                            {{ $ligne->produit->nom ?? 'Produit supprimé' }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </td>
+                            <td class="p-3">{{ number_format($commande->total, 0, ',', ' ') }} FCFA</td>
                             <td class="p-3">
     @if($commande->image_ordonnance)
         <a href="{{ route('ordonnances.show', $commande->id) }}" target="_blank" class="text-blue-600 underline text-sm flex items-center gap-1">
