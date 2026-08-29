@@ -225,7 +225,11 @@ Créé les factories manquantes ([ProduitFactory](database/factories/ProduitFact
 
 **61/61 tests passent** (26 scaffold + 35 métier). Vérifié aussi que `UploadedFile::fake()->image()` nécessite l'extension GD (absente localement et en CI) — utilisé `->create()` à la place pour ne pas dépendre de GD.
 
+### ✅ Workflow CI redondant supprimé
+`laravel.yml` ne faisait qu'un `php artisan about` (aucun test réel), en doublon avec [tests.yml](.github/workflows/tests.yml) qui fait strictement plus (build front + suite de tests complète) sur le même déclencheur (`main`). Supprimé.
+
+### ✅ Fichier mort supprimé
+`resources/views/dashboard.blade.php` (scaffold Breeze par défaut) n'était plus jamais rendu depuis que la route `dashboard` pointe vers `DashboardController::index` → vue `admin.dashboard`. Confirmé qu'aucun `view('dashboard')` n'existe dans le code, supprimé.
+
 ### Non traité (signalé, pas corrigé)
-- **Deux workflows CI redondants** : [laravel.yml](.github/workflows/laravel.yml) ne fait qu'un `php artisan about` sans lancer les tests, en plus de [tests.yml](.github/workflows/tests.yml) qui les lance réellement — à consolider.
 - **Pas de pagination** sur le catalogue, la liste produits admin, ni les commandes (client/admin) — non bloquant au volume actuel.
-- **`resources/views/dashboard.blade.php`** (scaffold Breeze par défaut) n'est plus jamais rendu depuis que la route `dashboard` pointe vers `DashboardController` — fichier mort, à supprimer si confirmé inutile.
