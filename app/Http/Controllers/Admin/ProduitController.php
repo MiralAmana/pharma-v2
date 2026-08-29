@@ -24,16 +24,15 @@ class ProduitController extends Controller
     // 3. ENREGISTRER LE PRODUIT
     public function store(Request $request)
 {
-    $request->validate([
+    $data = $request->validate([
         'nom' => 'required',
         'categorie' => 'required',
+        'description' => 'nullable|string',
         'prix' => 'required|numeric',
         'stock' => 'required|integer',
         'date_peremption' => 'required|date',
     ]);
 
-    // On prépare les données
-    $data = $request->all();
     // Astuce : On force la valeur à TRUE si coché, FALSE sinon
     $data['sur_ordonnance'] = $request->has('sur_ordonnance');
 
@@ -52,9 +51,10 @@ class ProduitController extends Controller
     //  METTRE À JOUR LE PRODUIT
     public function update(Request $request, $id)
 {
-    $request->validate([
+    $data = $request->validate([
         'nom' => 'required',
         'categorie' => 'required',
+        'description' => 'nullable|string',
         'prix' => 'required|numeric',
         'stock' => 'required|integer',
         'date_peremption' => 'required|date',
@@ -62,7 +62,6 @@ class ProduitController extends Controller
 
     $produit = Produit::findOrFail($id);
 
-    $data = $request->all();
     // Même astuce pour la mise à jour
     $data['sur_ordonnance'] = $request->has('sur_ordonnance');
 

@@ -125,9 +125,12 @@
                             </div>
                             
                             @auth
-                                <a href="{{ route('cart.add', $produit->id) }}" class="block w-full text-center bg-gray-800 text-white py-2.5 rounded-lg font-bold hover:bg-green-600 hover:shadow-lg transition transform active:scale-95">
-                                    Ajouter au panier ➕
-                                </a>
+                                <form action="{{ route('cart.add', $produit->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-center bg-gray-800 text-white py-2.5 rounded-lg font-bold hover:bg-green-600 hover:shadow-lg transition transform active:scale-95">
+                                        Ajouter au panier ➕
+                                    </button>
+                                </form>
                             @else
                                 <a href="{{ route('login') }}" class="block w-full text-center bg-gray-100 text-gray-500 py-2.5 rounded-lg font-semibold hover:bg-gray-200 transition text-sm">
                                     Se connecter pour acheter

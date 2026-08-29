@@ -12,9 +12,9 @@ class CatalogueController extends Controller
     {
         $query = Produit::where('stock', '>', 0);
 
-        // Filtre par recherche
+        // Filtre par recherche (insensible à la casse, portable entre SGBD)
         if ($request->filled('search')) {
-            $query->where('nom', 'ILIKE', "%{$request->search}%");
+            $query->whereRaw('LOWER(nom) LIKE ?', ['%'.mb_strtolower($request->search).'%']);
         }
 
         // Filtre par catégorie (NOUVEAU)

@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\CommandeController;
 use App\Http\Controllers\Admin\ProduitController;
 use App\Http\Controllers\Client\MesCommandesController;
+use App\Http\Controllers\OrdonnanceController;
 
 // 1. PAGE D'ACCUEIL (Accessible à tout le monde)
 Route::get('/', [CatalogueController::class, 'index'])->name('home');
@@ -24,14 +25,17 @@ Route::middleware('auth')->group(function () {
     // --- FONCTIONNALITÉS CLIENT ---
     // Panier
     Route::get('/mon-panier', [CartController::class, 'index'])->name('cart.index');
-    Route::get('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
-    Route::get('/remove-from-cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    Route::post('/add-to-cart/{id}', [CartController::class, 'addToCart'])->name('cart.add');
+    Route::delete('/remove-from-cart/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
     // Validation Commande
     Route::post('/checkout/valider', [CheckoutController::class, 'valider'])->name('checkout.valider');
 
     // Suivi des commandes (Historique Client)
     Route::get('/mes-commandes', [MesCommandesController::class, 'index'])->name('client.commandes.index');
+
+    // Consultation de l'ordonnance (propriétaire ou gérant, vérifié dans le contrôleur)
+    Route::get('/ordonnances/{commande}', [OrdonnanceController::class, 'show'])->name('ordonnances.show');
 });
 
 // 3. GROUPE SÉCURISÉ POUR LE GÉRANT UNIQUEMENT
@@ -43,8 +47,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
 
     // Gestion des Commandes
     Route::get('/admin/commandes', [CommandeController::class, 'index'])->name('admin.commandes');
-    Route::get('/admin/commandes/{id}/valider', [CommandeController::class, 'valider'])->name('admin.valider');
-    Route::get('/admin/commandes/{id}/annuler', [CommandeController::class, 'annuler'])->name('admin.annuler');
+    Route::post('/admin/commandes/{id}/valider', [CommandeController::class, 'valider'])->name('admin.valider');
+    Route::post('/admin/commandes/{id}/annuler', [CommandeController::class, 'annuler'])->name('admin.annuler');
 
     // Gestion des Produits
     Route::get('/admin/produits', [ProduitController::class, 'index'])->name('admin.produits.index');

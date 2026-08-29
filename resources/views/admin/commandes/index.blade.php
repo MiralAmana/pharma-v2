@@ -28,7 +28,7 @@
                             <td class="p-3">{{ $commande->total }} FCFA</td>
                             <td class="p-3">
     @if($commande->image_ordonnance)
-        <a href="{{ asset($commande->image_ordonnance) }}" target="_blank" class="text-blue-600 underline text-sm flex items-center gap-1">
+        <a href="{{ route('ordonnances.show', $commande->id) }}" target="_blank" class="text-blue-600 underline text-sm flex items-center gap-1">
             📄 Voir l'ordonnance
         </a>
     @else
@@ -46,8 +46,14 @@
                             </td>
                             <td class="p-3 flex gap-2">
                                 @if($commande->statut == 'en_attente')
-                                    <a href="{{ route('admin.valider', $commande->id) }}" class="text-green-600 font-bold">Valider</a>
-                                    <a href="{{ route('admin.annuler', $commande->id) }}" class="text-red-600 font-bold">Annuler</a>
+                                    <form action="{{ route('admin.valider', $commande->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-green-600 font-bold">Valider</button>
+                                    </form>
+                                    <form action="{{ route('admin.annuler', $commande->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-red-600 font-bold">Annuler</button>
+                                    </form>
                                 @else
                                     <span class="text-gray-400">Terminé</span>
                                 @endif

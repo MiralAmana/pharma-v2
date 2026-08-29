@@ -18,14 +18,18 @@ class CheckoutController extends Controller
             return redirect()->back()->with('error', 'Panier vide.');
         }
 
+        $request->validate([
+            'ordonnance' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:5120'],
+        ]);
+
         // 1. Gestion de l'image (Ordonnance)
+        // Stockée sur le disque "local" (storage/app/private), non exposé publiquement,
+        // avec un nom généré aléatoirement (le nom original n'est jamais utilisé tel quel).
         $path = null;
         if ($request->hasFile('ordonnance')) {
-            // On enregistre dans le dossier 'public/ordonnances'
             $file = $request->file('ordonnance');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('ordonnances'), $filename);
-            $path = 'ordonnances/' . $filename;
+            $filename = Str::uuid() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('ordonnances', $filename, 'local');
         }
 
         // 2. Calcul Total

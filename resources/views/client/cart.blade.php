@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>Mon Panier</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-gray-50">
 
@@ -48,9 +48,13 @@
                                 <td class="p-3">{{ $details['quantity'] }}</td>
                                 <td class="p-3 text-green-600 font-bold">{{ $totalLigne }} FCFA</td>
                                 <td class="p-3">
-                                    <a href="{{ route('cart.remove', $id) }}" class="text-red-500 hover:text-red-700 text-sm font-bold">
-                                        Retirer ❌
-                                    </a>
+                                    <form action="{{ route('cart.remove', $id) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-500 hover:text-red-700 text-sm font-bold">
+                                            Retirer ❌
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @endforeach

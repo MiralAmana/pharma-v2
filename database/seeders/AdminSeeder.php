@@ -9,11 +9,13 @@ class AdminSeeder extends Seeder
 {
     public function run()
 {
-    \App\Models\User::create([
-        'name' => 'Aliou Baldé',
-        'email' => 'admin@pharmacie.com',
-        'password' => bcrypt('password'), // Mot de passe : password
-        'role' => 'gerant', // C'est le chef !
-    ]);
+    \App\Models\User::firstOrCreate(
+        ['email' => 'admin@pharmacie.com'],
+        [
+            'name' => 'Aliou Baldé',
+            'password' => bcrypt('password'), // Mot de passe : password
+            'role' => 'gerant', // C'est le chef !
+        ]
+    );
 }
 }

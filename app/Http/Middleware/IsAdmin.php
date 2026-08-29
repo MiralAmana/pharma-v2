@@ -15,8 +15,8 @@ class IsAdmin
      */
     public function handle(Request $request, Closure $next)
 {
-    // Si l'utilisateur n'est PAS un gérant
-    if (auth()->user()->role !== 'gerant') {
+    // Si l'utilisateur n'est pas connecté, ou n'est PAS un gérant
+    if (! auth()->check() || auth()->user()->role !== 'gerant') {
         // On le renvoie à l'accueil avec un message d'erreur (ou 403 Forbidden)
         return redirect('/')->with('error', 'Accès interdit. Réservé aux gérants.');
     }
