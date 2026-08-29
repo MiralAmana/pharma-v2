@@ -213,8 +213,19 @@ Le calcul `needsPrescription` (`\App\Models\Produit::find()` dans une boucle `@p
 ### ✅ Messages flash absents sur la page d'accueil
 `welcome.blade.php` n'affichait aucun message de succès/erreur (découvert en testant le refus de stock) — bannière ajoutée, cohérente avec les autres pages.
 
+### ✅ Aucun test métier — 35 tests ajoutés
+Créé les factories manquantes ([ProduitFactory](database/factories/ProduitFactory.php), [CommandeFactory](database/factories/CommandeFactory.php), [LigneCommandeFactory](database/factories/LigneCommandeFactory.php) — `Commande` n'avait même pas `HasFactory`) et 7 fichiers de tests couvrant le cœur métier :
+- [CatalogueTest.php](tests/Feature/CatalogueTest.php) — filtre stock, recherche insensible à la casse, filtre catégorie, badge ordonnance.
+- [CartTest.php](tests/Feature/CartTest.php) — accès invité bloqué, ajout, incrément, plafond de stock, décrément, retrait.
+- [CheckoutTest.php](tests/Feature/CheckoutTest.php) — panier vide, total correct, **prix recalculé depuis la base (pas la session)**, stock insuffisant bloqué, ordonnance obligatoire, fichier accepté, panier vidé après validation.
+- [Admin/ProduitManagementTest.php](tests/Feature/Admin/ProduitManagementTest.php) — accès client/invité bloqué, CRUD complet, catégorie invalide rejetée, soft delete.
+- [Admin/CommandeManagementTest.php](tests/Feature/Admin/CommandeManagementTest.php) — accès client bloqué, déduction de stock à la validation, **double-validation ne déduit qu'une fois**, réintégration du stock à l'annulation (commande validée vs en attente).
+- [OrdonnanceAccessTest.php](tests/Feature/OrdonnanceAccessTest.php) — propriétaire autorisé, autre client refusé (403), gérant autorisé, invité redirigé.
+- [MesCommandesTest.php](tests/Feature/MesCommandesTest.php) — un client ne voit que ses propres commandes.
+
+**61/61 tests passent** (26 scaffold + 35 métier). Vérifié aussi que `UploadedFile::fake()->image()` nécessite l'extension GD (absente localement et en CI) — utilisé `->create()` à la place pour ne pas dépendre de GD.
+
 ### Non traité (signalé, pas corrigé)
-- **Pas de tests métier** : les 26 tests couvrent uniquement le scaffold Breeze (auth, profil) — aucun test sur `CatalogueController`, `CartController`, `CheckoutController`, `CommandeController`, `ProduitController`, `OrdonnanceController`, ni sur `IsAdmin`.
 - **Deux workflows CI redondants** : [laravel.yml](.github/workflows/laravel.yml) ne fait qu'un `php artisan about` sans lancer les tests, en plus de [tests.yml](.github/workflows/tests.yml) qui les lance réellement — à consolider.
 - **Pas de pagination** sur le catalogue, la liste produits admin, ni les commandes (client/admin) — non bloquant au volume actuel.
 - **`resources/views/dashboard.blade.php`** (scaffold Breeze par défaut) n'est plus jamais rendu depuis que la route `dashboard` pointe vers `DashboardController` — fichier mort, à supprimer si confirmé inutile.
