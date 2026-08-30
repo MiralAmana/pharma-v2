@@ -6,15 +6,30 @@ use App\Http\Controllers\Controller;
 use App\Models\Commande;
 use App\Models\Produit;
 use App\Notifications\CommandeStatutMisAJour;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class CommandeController extends Controller
 {
     // 1. VOIR LA LISTE DES COMMANDES
-    public function index()
+    public function index(Request $request)
     {
-        $commandes = Commande::with(['user', 'lignes.produit', 'traitePar'])->orderBy('created_at', 'desc')->paginate(15);
+        $query = Commande::with(['user', 'lignes.produit', 'traitePar'])->orderBy('created_at', 'desc');
+
+        if ($request->filled('statut') && in_array($request->statut, ['en_attente', 'validée', 'annulée'])) {
+            $query->where('statut', $request->statut);
+        }
+
+        if ($request->filled('recherche')) {
+            $recherche = strtolower($request->recherche);
+            $query->where(function ($q) use ($recherche) {
+                $q->whereRaw('LOWER(reference) LIKE ?', ["%{$recherche}%"])
+                    ->orWhereHas('user', fn ($u) => $u->whereRaw('LOWER(name) LIKE ?', ["%{$recherche}%"]));
+            });
+        }
+
+        $commandes = $query->paginate(15)->withQueryString();
 
         return view('admin.commandes.index', compact('commandes'));
     }

@@ -14,10 +14,8 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         
         <style>
-            /* Un petit motif de fond subtil pour faire "médical" */
             body {
-                background-color: #f0fdf4; /* Vert très clair */
-                background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2316a34a' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+                background: linear-gradient(120deg,#e6f7ff 0%,#d6f0fb 55%,#c7e9f8 100%);
             }
         </style>
     </head>
@@ -26,13 +24,13 @@
             <div class="mb-6 text-center">
     <a href="/" class="flex flex-col items-center gap-2">
         <img src="{{ asset('logo.jpg') }}" alt="Logo" class="h-20 w-auto object-contain">
-        
-        <span class="font-bold text-3xl text-green-700">PharmaPro</span>
+
+        <span class="font-bold text-3xl" style="color:#0f2942;">PharmaPro</span>
     </a>
-    <p class="text-green-600 mt-2">Votre pharmacie en ligne de confiance</p>
+    <p class="mt-2" style="color:#3a5670;">Votre pharmacie en ligne de confiance</p>
 </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white shadow-lg overflow-hidden sm:rounded-xl border-t-4 border-green-500">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-8 bg-white shadow-lg overflow-hidden sm:rounded-2xl" style="border-top:4px solid #0284c7;">
                 {{ $slot }}
             </div>
         </div>

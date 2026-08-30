@@ -3,17 +3,20 @@
 <head>
     <meta charset="utf-8">
     <title>Commande Confirmée</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-50 h-screen flex items-center justify-center">
-    <div class="bg-white p-8 rounded shadow-lg text-center max-w-lg">
-        <div class="text-6xl mb-4">✅</div>
-        <h1 class="text-2xl font-bold text-green-600 mb-2">Merci pour votre commande !</h1>
-        <p class="text-gray-600 mb-6">
-            Votre commande <strong>#{{ $commande->reference }}</strong> a bien été enregistrée.
+<body class="h-screen flex items-center justify-center" style="background:linear-gradient(120deg,#e6f7ff 0%,#d6f0fb 55%,#c7e9f8 100%); font-family:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+    <div class="bg-white p-10 rounded-2xl shadow-lg text-center max-w-lg mx-4">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center" style="background:#eff6ff;">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m20 6-11 11-5-5"/></svg>
+        </div>
+        <h1 class="text-2xl font-extrabold text-gray-900 mb-2">Merci pour votre commande !</h1>
+        <p class="text-gray-500 mb-7 text-sm leading-relaxed">
+            Votre commande <strong class="text-gray-900">#{{ $commande->reference }}</strong> a bien été enregistrée.
             Elle est en attente de validation par le pharmacien.
         </p>
-        <a href="/" class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900">
+        <a href="{{ route('home') }}" class="inline-flex items-center justify-center gap-2 rounded-full font-bold text-sm px-7 py-3 text-white" style="background:#0f2942;">
             Retour à l'accueil
         </a>
     </div>

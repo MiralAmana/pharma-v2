@@ -12,12 +12,15 @@ class CartController extends Controller
     {
         $cart = session()->get('cart', []);
 
-        // Un produit sur ordonnance dans le panier ? (calculé ici, pas dans la vue)
-        $needsPrescription = Produit::whereIn('id', array_keys($cart))
+        // IDs des produits du panier qui sont sur ordonnance (calculé ici, pas dans la vue).
+        $idsSurOrdonnance = Produit::whereIn('id', array_keys($cart))
             ->where('sur_ordonnance', true)
-            ->exists();
+            ->pluck('id')
+            ->all();
 
-        return view('client.cart', compact('cart', 'needsPrescription'));
+        $needsPrescription = ! empty($idsSurOrdonnance);
+
+        return view('client.cart', compact('cart', 'needsPrescription', 'idsSurOrdonnance'));
     }
 
     // 2. AJOUTER UN PRODUIT
