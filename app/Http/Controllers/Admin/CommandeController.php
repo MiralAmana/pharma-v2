@@ -48,8 +48,26 @@ class CommandeController extends Controller
 
             foreach ($commande->lignes as $ligne) {
                 $produit = Produit::lockForUpdate()->find($ligne->produit_id);
-                if ($produit && $produit->stock >= $ligne->quantite) {
-                    $produit->decrement('stock', $ligne->quantite);
+                if (! $produit) {
+                    continue;
+                }
+
+                // FEFO (First Expired, First Out) : on consomme d'abord le(s) lot(s)
+                // qui périment le plus tôt, pour ne jamais laisser un vieux lot invendu
+                // pendant qu'un lot plus récent part en premier.
+                $lots = $produit->lots()->where('quantite', '>', 0)->orderBy('date_peremption')->lockForUpdate()->get();
+
+                if ($lots->sum('quantite') >= $ligne->quantite) {
+                    $restant = $ligne->quantite;
+                    foreach ($lots as $lot) {
+                        if ($restant <= 0) {
+                            break;
+                        }
+                        $pris = min($lot->quantite, $restant);
+                        $lot->decrement('quantite', $pris);
+                        $restant -= $pris;
+                    }
+                    $produit->syncStockDepuisLots();
                 }
             }
 
@@ -76,14 +94,30 @@ class CommandeController extends Controller
         $commande = DB::transaction(function () use ($id) {
             $commande = Commande::with('lignes')->lockForUpdate()->findOrFail($id);
 
-            // Si la commande était DÉJÀ validée, cela veut dire qu'on avait déjà déduit le stock.
-            // Il faut donc le REMETTRE (Ré-incrémenter).
+            // Si la commande était DÉJÀ validée, cela veut dire qu'on avait déjà déduit le stock
+            // (d'un ou plusieurs lots). Il faut donc le remettre.
             if ($commande->statut === 'validée') {
                 foreach ($commande->lignes as $ligne) {
                     $produit = Produit::lockForUpdate()->find($ligne->produit_id);
-                    if ($produit) {
-                        $produit->increment('stock', $ligne->quantite);
+                    if (! $produit) {
+                        continue;
                     }
+
+                    // On ne sait pas de quel(s) lot(s) précis la vente avait été déduite : on
+                    // réincrémente le lot à la péremption la plus lointaine (le moins risqué à
+                    // "regonfler"), ou on recrée un lot si le produit n'en a plus aucun.
+                    $lot = $produit->lots()->orderByDesc('date_peremption')->lockForUpdate()->first();
+
+                    if ($lot) {
+                        $lot->increment('quantite', $ligne->quantite);
+                    } else {
+                        $produit->lots()->create([
+                            'quantite' => $ligne->quantite,
+                            'date_peremption' => $produit->date_peremption ?? now()->addYear(),
+                        ]);
+                    }
+
+                    $produit->syncStockDepuisLots();
                 }
             }
 

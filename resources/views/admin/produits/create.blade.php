@@ -45,13 +45,15 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1.5">Quantité en stock *</label>
-                            <input type="number" name="stock" value="{{ old('stock') }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500" placeholder="Ex: 50" required>
+                            <label class="block text-xs font-bold text-gray-500 mb-1.5">Stock initial *</label>
+                            <input type="number" name="stock_initial" value="{{ old('stock_initial', 0) }}" min="0" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500" placeholder="Ex: 50" required>
+                            <p class="text-xs text-gray-400 mt-1">Laisser à 0 si vous créez juste la fiche avant réception.</p>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1.5">Date de péremption *</label>
-                            <input type="date" name="date_peremption" value="{{ old('date_peremption') }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500" required>
+                            <label class="block text-xs font-bold text-gray-500 mb-1.5">Date de péremption de ce lot</label>
+                            <input type="date" name="date_peremption_initiale" value="{{ old('date_peremption_initiale') }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500">
+                            <p class="text-xs text-gray-400 mt-1">Requise si un stock initial est renseigné.</p>
                         </div>
 
                         <div class="flex items-end">

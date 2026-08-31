@@ -112,6 +112,75 @@ class CommandeManagementTest extends TestCase
         $this->assertSame(10, $produit->fresh()->stock);
     }
 
+    public function test_valider_consomme_dabord_le_lot_qui_perime_le_plus_tot(): void
+    {
+        // Le produit a deux lots : un qui périme dans 1 mois (30 unités) et un qui périme
+        // dans 5 mois (20 unités) — scénario typique d'une nouvelle livraison qui arrive
+        // avant l'écoulement de l'ancien stock.
+        $produit = Produit::factory()->create(['stock' => 0]);
+        $lotLointain = $produit->lots()->create(['quantite' => 20, 'date_peremption' => now()->addMonths(5)]);
+        $lotProche = $produit->lots()->create(['quantite' => 30, 'date_peremption' => now()->addMonth()]);
+        $produit->syncStockDepuisLots();
+
+        $commande = Commande::factory()->create(['statut' => 'en_attente']);
+        LigneCommande::factory()->create([
+            'commande_id' => $commande->id,
+            'produit_id' => $produit->id,
+            'quantite' => 25,
+        ]);
+
+        $this->actingAs($this->gerant())->post(route('admin.valider', $commande->id));
+
+        // Le lot proche (30) est entièrement consommé en premier (25 pris dessus),
+        // le lot lointain (20) n'est pas touché.
+        $this->assertSame(5, $lotProche->fresh()->quantite);
+        $this->assertSame(20, $lotLointain->fresh()->quantite);
+        $this->assertSame(25, $produit->fresh()->stock);
+    }
+
+    public function test_valider_repartit_sur_plusieurs_lots_si_un_seul_ne_suffit_pas(): void
+    {
+        $produit = Produit::factory()->create(['stock' => 0]);
+        $lot1 = $produit->lots()->create(['quantite' => 5, 'date_peremption' => now()->addMonth()]);
+        $lot2 = $produit->lots()->create(['quantite' => 20, 'date_peremption' => now()->addMonths(3)]);
+        $produit->syncStockDepuisLots();
+
+        $commande = Commande::factory()->create(['statut' => 'en_attente']);
+        LigneCommande::factory()->create([
+            'commande_id' => $commande->id,
+            'produit_id' => $produit->id,
+            'quantite' => 12,
+        ]);
+
+        $this->actingAs($this->gerant())->post(route('admin.valider', $commande->id));
+
+        // 5 pris sur le premier lot (épuisé), 7 pris sur le second.
+        $this->assertSame(0, $lot1->fresh()->quantite);
+        $this->assertSame(13, $lot2->fresh()->quantite);
+        $this->assertSame(13, $produit->fresh()->stock);
+    }
+
+    public function test_annuler_une_commande_validee_remet_le_stock_sur_le_lot_le_plus_lointain(): void
+    {
+        $produit = Produit::factory()->create(['stock' => 0]);
+        $lotProche = $produit->lots()->create(['quantite' => 5, 'date_peremption' => now()->addMonth()]);
+        $lotLointain = $produit->lots()->create(['quantite' => 10, 'date_peremption' => now()->addYear()]);
+        $produit->syncStockDepuisLots();
+
+        $commande = Commande::factory()->create(['statut' => 'validée']);
+        LigneCommande::factory()->create([
+            'commande_id' => $commande->id,
+            'produit_id' => $produit->id,
+            'quantite' => 3,
+        ]);
+
+        $this->actingAs($this->gerant())->post(route('admin.annuler', $commande->id));
+
+        $this->assertSame(5, $lotProche->fresh()->quantite);
+        $this->assertSame(13, $lotLointain->fresh()->quantite);
+        $this->assertSame(18, $produit->fresh()->stock);
+    }
+
     public function test_valider_enregistre_qui_et_quand_puis_notifie_le_client(): void
     {
         Notification::fake();

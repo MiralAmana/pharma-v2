@@ -53,15 +53,47 @@ class ProduitManagementTest extends TestCase
             'nom' => 'Doliprane 1000mg',
             'categorie' => 'Médicaments',
             'prix' => 1500,
-            'stock' => 50,
-            'date_peremption' => now()->addYear()->format('Y-m-d'),
+            'stock_initial' => 50,
+            'date_peremption_initiale' => now()->addYear()->format('Y-m-d'),
         ]);
 
         $response->assertRedirect(route('admin.produits.index'));
         $this->assertDatabaseHas('produits', [
             'nom' => 'Doliprane 1000mg',
             'sur_ordonnance' => false,
+            'stock' => 50,
         ]);
+        $produit = Produit::where('nom', 'Doliprane 1000mg')->firstOrFail();
+        $this->assertSame(1, $produit->lots()->count());
+        $this->assertSame(50, $produit->lots()->first()->quantite);
+    }
+
+    public function test_un_gerant_peut_creer_un_produit_sans_stock_initial(): void
+    {
+        $response = $this->actingAs($this->gerant())->post(route('admin.produits.store'), [
+            'nom' => 'Doliprane 1000mg',
+            'categorie' => 'Médicaments',
+            'prix' => 1500,
+            'stock_initial' => 0,
+        ]);
+
+        $response->assertRedirect(route('admin.produits.index'));
+        $produit = Produit::where('nom', 'Doliprane 1000mg')->firstOrFail();
+        $this->assertSame(0, $produit->stock);
+        $this->assertSame(0, $produit->lots()->count());
+    }
+
+    public function test_la_creation_echoue_sans_date_de_peremption_si_stock_initial_positif(): void
+    {
+        $response = $this->actingAs($this->gerant())->post(route('admin.produits.store'), [
+            'nom' => 'Produit Test',
+            'categorie' => 'Médicaments',
+            'prix' => 1500,
+            'stock_initial' => 50,
+        ]);
+
+        $response->assertSessionHasErrors('date_peremption_initiale');
+        $this->assertDatabaseMissing('produits', ['nom' => 'Produit Test']);
     }
 
     public function test_la_creation_echoue_avec_une_categorie_invalide(): void
@@ -70,8 +102,8 @@ class ProduitManagementTest extends TestCase
             'nom' => 'Produit Test',
             'categorie' => 'Categorie Inexistante',
             'prix' => 1500,
-            'stock' => 50,
-            'date_peremption' => now()->addYear()->format('Y-m-d'),
+            'stock_initial' => 50,
+            'date_peremption_initiale' => now()->addYear()->format('Y-m-d'),
         ]);
 
         $response->assertSessionHasErrors('categorie');
@@ -86,8 +118,6 @@ class ProduitManagementTest extends TestCase
             'nom' => $produit->nom,
             'categorie' => $produit->categorie,
             'prix' => 2000,
-            'stock' => $produit->stock,
-            'date_peremption' => $produit->date_peremption->format('Y-m-d'),
         ]);
 
         $response->assertRedirect(route('admin.produits.index'));
@@ -112,8 +142,8 @@ class ProduitManagementTest extends TestCase
             'nom' => 'Doliprane 1000mg',
             'categorie' => 'Médicaments',
             'prix' => 1500,
-            'stock' => 50,
-            'date_peremption' => now()->addYear()->format('Y-m-d'),
+            'stock_initial' => 50,
+            'date_peremption_initiale' => now()->addYear()->format('Y-m-d'),
             'image' => UploadedFile::fake()->create('photo.jpg', 100, 'image/jpeg'),
         ]);
 
@@ -134,8 +164,6 @@ class ProduitManagementTest extends TestCase
             'nom' => $produit->nom,
             'categorie' => $produit->categorie,
             'prix' => $produit->prix,
-            'stock' => $produit->stock,
-            'date_peremption' => $produit->date_peremption->format('Y-m-d'),
             'image' => UploadedFile::fake()->create('nouvelle.jpg', 100, 'image/jpeg'),
         ]);
 

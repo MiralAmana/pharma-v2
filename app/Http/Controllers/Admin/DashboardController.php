@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Commande;
 use App\Models\LigneCommande;
+use App\Models\Lot;
 use App\Models\Produit;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -21,10 +22,14 @@ class DashboardController extends Controller
         // 2. ALERTES STOCK (Quantité < 5)
         $alerteStock = Produit::where('stock', '<', 5)->count();
 
-        // 3. ALERTES PÉREMPTION (Périme dans moins de 3 mois) - NOUVEAU !
-        // On cherche les produits dont la date est entre aujourd'hui et dans 90 jours
-        $alertePeremption = Produit::whereDate('date_peremption', '<', Carbon::now()->addMonths(3))
-            ->whereDate('date_peremption', '>', Carbon::now()) // Pas encore périmés, mais bientôt
+        // 3. ALERTES PÉREMPTION (Périme dans moins de 3 mois)
+        // Par LOT : un même produit peut avoir un lot qui périme bientôt et un autre
+        // qui périme dans longtemps, l'alerte doit porter sur le lot concerné, pas le produit entier.
+        $alertePeremption = Lot::where('quantite', '>', 0)
+            ->whereDate('date_peremption', '<', Carbon::now()->addMonths(3))
+            ->whereDate('date_peremption', '>', Carbon::now())
+            ->orderBy('date_peremption')
+            ->with('produit')
             ->get();
 
         // 4. PRODUITS PHARES (TOP 5 des ventes) - NOUVEAU !

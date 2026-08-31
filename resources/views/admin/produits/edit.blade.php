@@ -45,14 +45,11 @@
                             <input type="number" name="prix" value="{{ old('prix', $produit->prix) }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500" required>
                         </div>
 
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1.5">Quantité en stock *</label>
-                            <input type="number" name="stock" value="{{ old('stock', $produit->stock) }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500" required>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 mb-1.5">Date de péremption *</label>
-                            <input type="date" name="date_peremption" value="{{ old('date_peremption', $produit->date_peremption?->format('Y-m-d')) }}" class="w-full rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500" required>
+                        <div class="md:col-span-2">
+                            <div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background:#f0f9ff;">
+                                <span class="text-xs font-bold text-gray-500">Stock actuel (calculé à partir des lots ci-dessous)</span>
+                                <span class="text-lg font-extrabold" style="color:#0369a1;">{{ $produit->stock }} unité(s)</span>
+                            </div>
                         </div>
 
                         <div class="flex items-end">
@@ -89,6 +86,52 @@
                         </button>
                     </div>
 
+                </form>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-7 mt-5">
+                <h3 class="font-extrabold text-gray-900 mb-1">Lots en stock</h3>
+                <p class="text-xs text-gray-400 mb-4">Chaque réception de marchandise est un lot avec sa propre date de péremption. À la vente, le lot qui périme le plus tôt est déduit en premier (FEFO).</p>
+
+                @if($produit->lots->isEmpty())
+                    <p class="text-sm text-gray-500 italic mb-5">Aucun lot pour ce produit — stock à 0.</p>
+                @else
+                    <div class="flex flex-col mb-5">
+                        @foreach($produit->lots as $lot)
+                            @php $diasAvant = \Carbon\Carbon::now()->diffInDays($lot->date_peremption, false); @endphp
+                            <div class="flex items-center gap-3 py-3 {{ !$loop->last ? 'border-b border-gray-50' : '' }}">
+                                <span class="font-bold text-gray-900 text-sm w-24">{{ $lot->quantite }} unité(s)</span>
+                                <span class="text-sm font-semibold w-28" style="color: {{ $diasAvant <= 90 ? '#b91c1c' : '#374151' }};">
+                                    {{ $lot->date_peremption->format('d/m/Y') }}
+                                </span>
+                                <span class="text-xs text-gray-400 flex-1">{{ $lot->numero_lot ? 'Lot n°'.$lot->numero_lot : '—' }}</span>
+                                <form action="{{ route('admin.produits.lots.destroy', [$produit->id, $lot->id]) }}" method="POST" onsubmit="return confirm('Supprimer ce lot ?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-xs font-bold text-red-600 hover:text-red-800">Supprimer</button>
+                                </form>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                <form action="{{ route('admin.produits.lots.store', $produit->id) }}" method="POST" class="flex flex-wrap items-end gap-3 pt-4 border-t border-gray-100">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1.5">Quantité reçue *</label>
+                        <input type="number" name="quantite" min="1" required class="rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500 w-32">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1.5">Date de péremption *</label>
+                        <input type="date" name="date_peremption" required class="rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1.5">N° de lot</label>
+                        <input type="text" name="numero_lot" class="rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500 w-32" placeholder="Optionnel">
+                    </div>
+                    <button type="submit" class="text-sm font-bold px-5 py-2.5 rounded-full text-white" style="background:#16a34a;">
+                        + Réceptionner ce lot
+                    </button>
                 </form>
             </div>
         </div>

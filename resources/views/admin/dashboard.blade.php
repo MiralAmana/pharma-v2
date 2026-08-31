@@ -76,18 +76,23 @@
 
                     @if($alertePeremption->count() > 0)
                         <div class="flex flex-col">
-                            @foreach($alertePeremption as $prod)
+                            @foreach($alertePeremption as $lot)
                                 <div class="flex items-center gap-3 py-3 {{ !$loop->last ? 'border-b border-gray-50' : '' }}">
-                                    <span class="flex-1 text-sm font-semibold text-gray-900">{{ $prod->nom }}</span>
-                                    <span class="text-xs font-bold text-red-600 w-24">{{ \Carbon\Carbon::parse($prod->date_peremption)->format('d/m/Y') }}</span>
-                                    <span class="text-xs text-gray-400 w-20">dans {{ \Carbon\Carbon::now()->diffInDays($prod->date_peremption) }} j</span>
-                                    <a href="{{ route('admin.produits.edit', $prod->id) }}" class="text-xs font-bold text-sky-700">Gérer</a>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-sm font-semibold text-gray-900 truncate">{{ $lot->produit->nom ?? 'Produit supprimé' }}</div>
+                                        <div class="text-xs text-gray-400">{{ $lot->quantite }} unité(s) sur ce lot</div>
+                                    </div>
+                                    <span class="text-xs font-bold text-red-600 w-24 shrink-0">{{ $lot->date_peremption->format('d/m/Y') }}</span>
+                                    <span class="text-xs text-gray-400 w-16 shrink-0">dans {{ (int) Carbon\Carbon::now()->diffInDays($lot->date_peremption) }} j</span>
+                                    @if($lot->produit)
+                                        <a href="{{ route('admin.produits.edit', $lot->produit_id) }}" class="text-xs font-bold text-sky-700 shrink-0">Gérer</a>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>
                     @else
                         <p class="text-green-700 font-semibold text-sm p-4 rounded-xl" style="background:#f0fdf4;">
-                            ✅ Aucun produit ne périme bientôt.
+                            ✅ Aucun lot ne périme bientôt.
                         </p>
                     @endif
                 </div>

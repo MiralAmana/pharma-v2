@@ -20,9 +20,9 @@ class UpdateProduitRequest extends FormRequest
             'categorie' => ['required', Rule::in(Produit::CATEGORIES)],
             'description' => 'nullable|string',
             'prix' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'date_peremption' => 'required|date',
             'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            // Le stock et sa péremption ne se modifient plus ici : ils découlent des lots
+            // (voir ProduitController::storeLot / destroyLot).
         ];
     }
 }

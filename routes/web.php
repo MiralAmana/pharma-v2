@@ -63,6 +63,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::put('/admin/produits/{id}', [ProduitController::class, 'update'])->name('admin.produits.update');
     Route::delete('/admin/produits/{id}', [ProduitController::class, 'destroy'])->name('admin.produits.destroy');
 
+    // Gestion des Lots (réception de stock)
+    Route::post('/admin/produits/{produit}/lots', [ProduitController::class, 'storeLot'])->name('admin.produits.lots.store');
+    Route::delete('/admin/produits/{produit}/lots/{lot}', [ProduitController::class, 'destroyLot'])->name('admin.produits.lots.destroy');
+
 });
 
 require __DIR__.'/auth.php';

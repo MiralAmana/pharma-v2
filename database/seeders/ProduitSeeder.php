@@ -13,7 +13,7 @@ class ProduitSeeder extends Seeder
         // ==========================================
         // 1. MÉDICAMENTS
         // ==========================================
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Amoxicilline 1g (Antibiotique)'],
             [
                 'categorie' => 'Médicaments',
@@ -25,7 +25,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Ibuprofène 400mg (Boîte de 20)'],
             [
                 'categorie' => 'Médicaments',
@@ -37,7 +37,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Tramadol 50mg (Antidouleur Puissant)'],
             [
                 'categorie' => 'Médicaments',
@@ -49,7 +49,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Gaviscon Menthe (Sachets)'],
             [
                 'categorie' => 'Médicaments',
@@ -64,7 +64,7 @@ class ProduitSeeder extends Seeder
         // ==========================================
         // 2. SANTÉ & BIEN-ÊTRE
         // ==========================================
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Berocca Énergie (Comprimés)'],
             [
                 'categorie' => 'Santé & Bien-être',
@@ -76,7 +76,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Azinc Forme et Vitalité'],
             [
                 'categorie' => 'Santé & Bien-être',
@@ -88,7 +88,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Probiotiques Lactibiane'],
             [
                 'categorie' => 'Santé & Bien-être',
@@ -100,7 +100,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Oméga 3 Cardio'],
             [
                 'categorie' => 'Santé & Bien-être',
@@ -115,7 +115,7 @@ class ProduitSeeder extends Seeder
         // ==========================================
         // 3. HYGIÈNE & SOINS
         // ==========================================
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Bétadine Jaune (Dermique)'],
             [
                 'categorie' => 'Hygiène & Soins',
@@ -127,7 +127,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Brosse à dents électrique Oral-B'],
             [
                 'categorie' => 'Hygiène & Soins',
@@ -139,7 +139,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Solution Hydroalcoolique (500ml)'],
             [
                 'categorie' => 'Hygiène & Soins',
@@ -151,7 +151,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Fil dentaire ciré'],
             [
                 'categorie' => 'Hygiène & Soins',
@@ -166,7 +166,7 @@ class ProduitSeeder extends Seeder
         // ==========================================
         // 4. MATÉRIEL MÉDICAL
         // ==========================================
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Tensiomètre Omron M3'],
             [
                 'categorie' => 'Matériel Médical',
@@ -178,7 +178,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Oxymètre de pouls'],
             [
                 'categorie' => 'Matériel Médical',
@@ -190,7 +190,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Lecteur Glycémie Accu-Chek'],
             [
                 'categorie' => 'Matériel Médical',
@@ -202,7 +202,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Bandelettes Test Diabète (x50)'],
             [
                 'categorie' => 'Matériel Médical',
@@ -217,7 +217,7 @@ class ProduitSeeder extends Seeder
         // ==========================================
         // 5. BÉBÉ & MAMAN
         // ==========================================
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Sérum Physiologique (40 dosettes)'],
             [
                 'categorie' => 'Bébé & Maman',
@@ -229,7 +229,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Lait Gallia Croissance 3'],
             [
                 'categorie' => 'Bébé & Maman',
@@ -241,7 +241,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Tire-lait Électrique Avent'],
             [
                 'categorie' => 'Bébé & Maman',
@@ -253,7 +253,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Crème Bepanthen Pommade'],
             [
                 'categorie' => 'Bébé & Maman',
@@ -268,7 +268,7 @@ class ProduitSeeder extends Seeder
         // ==========================================
         // 6. COSMÉTIQUES
         // ==========================================
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Eau Thermale Avène (300ml)'],
             [
                 'categorie' => 'Cosmétiques',
@@ -280,7 +280,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Sérum Vitamine C La Roche-Posay'],
             [
                 'categorie' => 'Cosmétiques',
@@ -292,7 +292,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Crème Hydratante CeraVe'],
             [
                 'categorie' => 'Cosmétiques',
@@ -304,7 +304,7 @@ class ProduitSeeder extends Seeder
             ]
         );
 
-        Produit::firstOrCreate(
+        $this->creerProduit(
             ['nom' => 'Baume Lèvres Rêve de Miel'],
             [
                 'categorie' => 'Cosmétiques',
@@ -315,5 +315,21 @@ class ProduitSeeder extends Seeder
                 'sur_ordonnance' => false,
             ]
         );
+    }
+
+    // Crée le produit (idempotent) puis son lot initial correspondant au stock/date_peremption
+    // fournis, si ce produit vient d'être créé et n'a pas encore de lot.
+    private function creerProduit(array $recherche, array $attributs): Produit
+    {
+        $produit = Produit::firstOrCreate($recherche, $attributs);
+
+        if ($produit->lots()->doesntExist() && $produit->stock > 0) {
+            $produit->lots()->create([
+                'quantite' => $produit->stock,
+                'date_peremption' => $produit->date_peremption,
+            ]);
+        }
+
+        return $produit;
     }
 }

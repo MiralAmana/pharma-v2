@@ -25,6 +25,20 @@ class ProduitFactory extends Factory
         ];
     }
 
+    // Le stock réel provient des lots : on crée un lot correspondant au stock/date_peremption
+    // demandés, pour que les tests existants (qui passent 'stock' directement) restent valides.
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Produit $produit) {
+            if ($produit->stock > 0 && $produit->lots()->doesntExist()) {
+                $produit->lots()->create([
+                    'quantite' => $produit->stock,
+                    'date_peremption' => $produit->date_peremption ?? now()->addYear(),
+                ]);
+            }
+        });
+    }
+
     public function surOrdonnance(): static
     {
         return $this->state(fn () => ['sur_ordonnance' => true]);
