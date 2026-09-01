@@ -56,6 +56,29 @@ class CartTest extends TestCase
         $this->assertSame(2, session('cart')[$produit->id]['quantity']);
     }
 
+    public function test_ajouter_au_panier_en_ajax_retourne_du_json_sans_recharger(): void
+    {
+        $user = User::factory()->create();
+        $produit = Produit::factory()->create(['stock' => 10]);
+
+        $response = $this->actingAs($user)->postJson(route('cart.add', $produit->id));
+
+        $response->assertOk();
+        $response->assertJson(['success' => true, 'cartCount' => 1]);
+    }
+
+    public function test_ajouter_au_panier_en_ajax_avec_stock_insuffisant(): void
+    {
+        $user = User::factory()->create();
+        $produit = Produit::factory()->create(['stock' => 1]);
+        $this->actingAs($user)->post(route('cart.add', $produit->id));
+
+        $response = $this->actingAs($user)->postJson(route('cart.add', $produit->id));
+
+        $response->assertOk();
+        $response->assertJson(['success' => false, 'cartCount' => 1]);
+    }
+
     public function test_diminuer_la_quantite_retire_la_ligne_a_zero(): void
     {
         $user = User::factory()->create();

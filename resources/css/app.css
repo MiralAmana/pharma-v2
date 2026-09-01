@@ -1,3 +1,212 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Fondu doux entre les pages (pagination, navigation) au lieu d'un flash de contenu.
+   Ignoré par les navigateurs qui ne supportent pas encore les View Transitions MPA. */
+@view-transition {
+    navigation: auto;
+}
+
+/* Palette de thème (clair par défaut, sombre sous .dark) — toutes les couleurs codées en dur
+   dans les vues (style="...") référencent ces variables via var(--nom), pour que le mode sombre
+   ne nécessite aucune classe dark: supplémentaire sur ces éléments. */
+:root {
+    --surface: #ffffff;
+    --brand: #0284c7;
+    --brand-hover: #0369a1;
+    --navy: #0f2942;
+    --navy-soft: #3a5670;
+    --btn-navy-hover: #163a5c;
+
+    --success: #16a34a;
+    --success-strong: #15803d;
+    --success-text: #166534;
+    --success-bg: #f0fdf4;
+
+    --danger: #b91c1c;
+    --danger-bg: #fef2f2;
+    --danger-border: #fecaca;
+
+    --warning-text: #b45309;
+    --warning-bg: #fffbeb;
+
+    --violet: #6d28d9;
+    --violet-bg: #f5f3ff;
+
+    --sky-bg-1: #eff6ff;
+    --sky-bg-2: #f0f9ff;
+    --sky-border: #bae6fd;
+    --cyan-text: #0e7490;
+    --cyan-bg: #ecfeff;
+    --blue-text: #1d4ed8;
+
+    --orange-text: #c2410c;
+    --orange-bg: #fff7ed;
+    --pink-text: #be185d;
+    --pink-bg: #fdf2f8;
+
+    --gray-icon: #9ca3af;
+    --gray-text-1: #374151;
+    --gray-text-2: #475569;
+    --gray-text-3: #4b5563;
+    --gray-bg-soft: #f1f5f9;
+    --border-1: #e5e7eb;
+    --border-2: #f3f4f6;
+    --surface-alt: #f7f8f7;
+
+    --hero-grad-1: #e6f7ff;
+    --hero-grad-2: #d6f0fb;
+    --hero-grad-3: #c7e9f8;
+}
+
+.dark {
+    --surface: #1e293b;
+    --brand: #38bdf8;
+    --brand-hover: #7dd3fc;
+    --navy: #e2e8f0;
+    --navy-soft: #94a3b8;
+    --btn-navy-hover: #2c516f;
+
+    --success: #4ade80;
+    --success-strong: #4ade80;
+    --success-text: #86efac;
+    --success-bg: #0f2e1a;
+
+    --danger: #f87171;
+    --danger-bg: #3b0d0d;
+    --danger-border: #7f1d1d;
+
+    --warning-text: #fbbf24;
+    --warning-bg: #3d2c08;
+
+    --violet: #a78bfa;
+    --violet-bg: #241b40;
+
+    --sky-bg-1: #0c2f4a;
+    --sky-bg-2: #0c2f4a;
+    --sky-border: #0c4a6e;
+    --cyan-text: #22d3ee;
+    --cyan-bg: #0b2e33;
+    --blue-text: #60a5fa;
+
+    --orange-text: #fb923c;
+    --orange-bg: #3a2410;
+    --pink-text: #f472b6;
+    --pink-bg: #3a1029;
+
+    --gray-icon: #64748b;
+    --gray-text-1: #cbd5e1;
+    --gray-text-2: #94a3b8;
+    --gray-text-3: #94a3b8;
+    --gray-bg-soft: #334155;
+    --border-1: #334155;
+    --border-2: #334155;
+    --surface-alt: #1e293b;
+
+    --hero-grad-1: #0c1e2e;
+    --hero-grad-2: #0f2942;
+    --hero-grad-3: #16324a;
+}
+
+/* Couleurs Tailwind neutres (bg-white, text-gray-*, border-gray-*) utilisées comme classes
+   partout dans les vues : on les fait suivre le thème sans devoir ajouter dark: sur chaque
+   élément. Portée volontairement large (surcharge par sélecteur de classe) : ces utilitaires
+   neutres signifient toujours "surface / texte / bordure" dans cette appli. */
+.dark .bg-white { background-color: #1e293b; }
+.dark .bg-gray-50 { background-color: #0f172a; }
+.dark .bg-gray-100 { background-color: #334155; }
+.dark .text-gray-900 { color: #f1f5f9; }
+.dark .text-gray-800 { color: #e2e8f0; }
+.dark .text-gray-700 { color: #cbd5e1; }
+.dark .text-gray-600 { color: #94a3b8; }
+.dark .text-gray-500 { color: #94a3b8; }
+.dark .text-gray-400 { color: #64748b; }
+.dark .border-gray-100 { border-color: #334155; }
+.dark .border-gray-200 { border-color: #334155; }
+.dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]) { border-color: #334155; }
+.dark .shadow-sm, .dark .shadow, .dark .shadow-md, .dark .shadow-lg {
+    --tw-shadow-color: rgba(0, 0, 0, .4);
+}
+
+/* Champs de formulaire : aucun ne porte de classe de fond explicite dans les vues (ils
+   s'appuient sur le blanc par défaut du navigateur), donc une règle globale plutôt que de
+   modifier chaque champ un par un. */
+.dark input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]):not([type="file"]),
+.dark select,
+.dark textarea {
+    background-color: #1e293b;
+    color: #f1f5f9;
+    border-color: #334155;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #64748b;
+}
+
+/* Sélecteur de thème clair / sombre / système (voir x-theme-toggle et resources/js/theme.js) */
+.theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--border-2);
+}
+.theme-toggle-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: var(--gray-text-2);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.theme-toggle-btn:hover {
+    color: var(--brand);
+}
+.theme-toggle-btn.theme-toggle-active {
+    background: var(--surface);
+    color: var(--brand);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .12);
+}
+
+/* Glassmorphism : verre dépoli pour les éléments qui flottent au-dessus d'un fond qui défile
+   (navs collantes) ou d'un dégradé (badge/carte du hero). N'est appliqué qu'à ces cas — pas aux
+   cartes produit/admin posées sur un fond uni, où le flou n'apporte rien visuellement. */
+.glass-nav {
+    background: rgba(255, 255, 255, .68);
+    backdrop-filter: blur(16px) saturate(160%);
+    -webkit-backdrop-filter: blur(16px) saturate(160%);
+    border-bottom: 1px solid rgba(15, 23, 42, .06);
+}
+.dark .glass-nav {
+    background: rgba(15, 23, 42, .55);
+    border-bottom: 1px solid rgba(255, 255, 255, .07);
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, .6);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, .5);
+}
+.dark .glass-card {
+    background: rgba(30, 41, 59, .55);
+    border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.glass-pill {
+    background: rgba(255, 255, 255, .55);
+    backdrop-filter: blur(12px) saturate(160%);
+    -webkit-backdrop-filter: blur(12px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, .5);
+}
+.dark .glass-pill {
+    background: rgba(30, 41, 59, .5);
+    border: 1px solid rgba(255, 255, 255, .08);
+}

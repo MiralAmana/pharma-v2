@@ -11,8 +11,9 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-5">
 
             @if(session('success'))
-                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm font-semibold text-sm" style="color:#166534;">
-                    ✅ {{ session('success') }}
+                <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm font-semibold text-sm flex items-center gap-2" style="color:var(--success-text);">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--success-text)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="m20 6-11 11-5-5"/></svg>
+                    {{ session('success') }}
                 </div>
             @endif
 
@@ -20,7 +21,7 @@
                 <div>
                     <span class="font-extrabold text-gray-900 text-sm">{{ $produits->total() }} produit(s) au catalogue</span>
                 </div>
-                <a href="{{ route('admin.produits.create') }}" class="text-xs font-bold px-5 py-2.5 rounded-full text-white" style="background:#0284c7;">
+                <a href="{{ route('admin.produits.create') }}" class="text-xs font-bold px-5 py-2.5 rounded-full text-white" style="background:var(--brand);">
                     + Nouveau produit
                 </a>
             </div>
@@ -32,12 +33,12 @@
                     @endphp
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4">
 
-                        <div class="w-14 h-14 rounded-xl overflow-hidden shrink-0" style="background:#f7f8f7;">
+                        <div class="w-14 h-14 rounded-xl overflow-hidden shrink-0" style="background:var(--surface-alt);">
                             @if($produit->image)
                                 <img src="{{ asset('storage/' . $produit->image) }}" alt="{{ $produit->nom }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center">
-                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--gray-icon)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                             @endif
                         </div>
@@ -47,7 +48,7 @@
                             <div class="flex items-center gap-2 mt-0.5">
                                 <span class="text-xs text-gray-400">{{ $produit->categorie }}</span>
                                 @if($produit->sur_ordonnance)
-                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full" style="background:#fef2f2;color:#b91c1c;">
+                                    <span class="inline-flex items-center gap-1 text-[10px] font-bold uppercase px-2 py-0.5 rounded-full" style="background:var(--danger-bg);color:var(--danger);">
                                         Ordonnance
                                     </span>
                                 @endif
@@ -60,29 +61,29 @@
 
                         <div class="w-28 shrink-0">
                             @if($produit->stock < 5)
-                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:#fef2f2;color:#b91c1c;">
+                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:var(--danger-bg);color:var(--danger);">
                                     {{ $produit->stock }} en stock
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:#f0fdf4;color:#166534;">
+                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:var(--success-bg);color:var(--success-text);">
                                     {{ $produit->stock }} en stock
                                 </span>
                             @endif
                         </div>
 
-                        <div class="w-32 shrink-0 text-xs font-semibold" style="color: {{ $diasAvantPeremption <= 90 ? '#b91c1c' : '#9ca3af' }};">
+                        <div class="w-32 shrink-0 text-xs font-semibold" style="color: {{ $diasAvantPeremption <= 90 ? 'var(--danger)' : 'var(--gray-icon)' }};">
                             Exp. {{ \Carbon\Carbon::parse($produit->date_peremption)->format('d/m/Y') }}
                         </div>
 
                         <div class="flex items-center gap-2 shrink-0">
                             <a href="{{ route('admin.produits.edit', $produit->id) }}" class="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 hover:border-green-300" title="Modifier">
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#374151" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--gray-text-1)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>
                             </a>
                             <form action="{{ route('admin.produits.destroy', $produit->id) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce médicament ?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="w-9 h-9 rounded-full flex items-center justify-center border border-gray-200 hover:border-red-300" title="Supprimer">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
                                 </button>
                             </form>
                         </div>

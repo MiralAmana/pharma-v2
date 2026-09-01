@@ -271,3 +271,71 @@ Présent en dépendance dev mais jamais exécuté. `vendor/bin/pint` a corrigé 
 
 ### Non traité (signalé, pas corrigé)
 - **Pagination en anglais** ("Next »" / "« Previous") — `APP_LOCALE=en` alors que le reste de l'UI est en français. Publier les vues de pagination (`php artisan vendor:publish --tag=laravel-pagination`) ou passer `APP_LOCALE=fr` pour corriger, si souhaité.
+
+---
+
+## Fonctionnalité ajoutée — Gestion des lots (FEFO) — 2026-08-31
+
+### Problème métier signalé par l'utilisateur
+Un même produit peut recevoir plusieurs livraisons avec des dates de péremption différentes (ex. un lot qui périme dans 1 mois, un autre livré ensuite qui périme dans 5 mois). L'ancien modèle `produits` n'avait qu'un seul couple `stock` / `date_peremption` par produit : impossible de représenter deux lots, et rien n'empêchait de vendre le nouveau lot avant l'ancien.
+
+### Modèle de données
+Nouvelle table [`lots`](database/migrations/2026_08_30_180350_create_lots_table.php) (`produit_id`, `quantite`, `date_peremption`, `numero_lot` optionnel). `produits.stock` et `produits.date_peremption` restent en base (colonnes dénormalisées en lecture rapide) mais deviennent des valeurs **calculées** à partir des lots via [`Produit::syncStockDepuisLots()`](app/Models/Produit.php) (stock = somme des lots actifs, date_peremption = date du lot le plus proche) — plus jamais modifiées à la main. `produits.date_peremption` rendu `nullable` ([migration](database/migrations/2026_08_30_180351_make_date_peremption_nullable_on_produits_table.php)) pour un produit tout juste créé sans lot.
+
+### FEFO (First Expired, First Out)
+[`CommandeController::valider()`](app/Http/Controllers/Admin/CommandeController.php) consomme désormais le(s) lot(s) qui périment le plus tôt en premier (au lieu de décrémenter `stock` directement), avec répartition sur plusieurs lots si un seul ne suffit pas. `annuler()` sur une commande déjà validée réincrémente le lot à la péremption la plus lointaine (par prudence : on ne sait pas de quel lot précis la vente avait été prélevée). Le verrouillage (`lockForUpdate()` sur les lots concernés, en plus du produit) préserve la protection contre la race condition déjà en place (point 5 de l'audit initial).
+
+### Admin
+- [`admin/produits/edit.blade.php`](resources/views/admin/produits/edit.blade.php) : le stock n'est plus un champ éditable — remplacé par un affichage calculé + une section "Lots en stock" (liste des lots, suppression, formulaire de réception d'un nouveau lot).
+- [`admin/produits/create.blade.php`](resources/views/admin/produits/create.blade.php) : "stock initial" + sa date de péremption créent le premier lot (0 accepté si la fiche est créée avant réception de la marchandise).
+- Nouvelles routes `admin.produits.lots.store` / `admin.produits.lots.destroy` ([routes/web.php](routes/web.php)).
+
+### Dashboard
+[`DashboardController`](app/Http/Controllers/Admin/DashboardController.php) : l'alerte "Risques de péremption (3 mois)" porte désormais sur les **lots**, pas les produits — un produit avec un lot sain et un lot proche de la péremption remonte bien l'alerte (avec la quantité concernée), au lieu de la masquer sous prétexte que le produit a du stock ailleurs.
+
+### Tests
+10 nouveaux tests : [`Admin/LotManagementTest.php`](tests/Feature/Admin/LotManagementTest.php) (réception/suppression de lot, recalcul stock/date), plus dans [`Admin/CommandeManagementTest.php`](tests/Feature/Admin/CommandeManagementTest.php) — consommation FEFO du lot le plus proche, répartition sur deux lots, réincrémentation à l'annulation. `ProduitFactory` génère automatiquement un lot correspondant au `stock`/`date_peremption` passés, pour que les tests existants restent valides sans réécriture. **77/77 tests passent.**
+
+Vérifié en conditions réelles : ajout d'un second lot (15 unités, périme dans 1 mois) sur un produit qui avait déjà un lot à 49 unités périmant en 2028 — le dashboard fait remonter uniquement les 15 unités à risque, le stock affiché passe bien à 64.
+
+---
+
+## UX — Ajout au panier sans rechargement + transitions plus douces — 2026-08-31
+
+### Problème signalé par l'utilisateur
+« à chaque achat la page se rafraîchit » et « quand j'avance dans la liste des produits [pagination] le chargement n'est pas assez soft ».
+
+### Ajout au panier (accueil)
+[`CartController::addToCart`](app/Http/Controllers/Client/CartController.php) répond désormais en JSON (`{success, message, cartCount}`) quand la requête le demande (`wantsJson()`), en plus du comportement `redirect()->back()` existant conservé pour la soumission classique (dégradation propre sans JS).
+
+Côté front, [`resources/js/cart.js`](resources/js/cart.js) intercepte la soumission des formulaires marqués `data-cart-add` ([welcome.blade.php](resources/views/welcome.blade.php)), les envoie en `fetch`, met à jour le badge du panier (`[data-cart-count]`) et affiche un petit toast (au lieu du bandeau de succès pleine page) — la page ne recharge plus du tout, la position de scroll dans le catalogue est conservée.
+
+### Pagination et navigation plus douces
+- `@view-transition { navigation: auto; }` ajouté dans [app.css](resources/css/app.css) — fondu enchaîné natif entre deux pages (navigateurs Chromium récents ; dégradation silencieuse ailleurs, aucun risque).
+- Chaque carte produit du catalogue reçoit une animation `fadeInUp` légèrement décalée par colonne (`resources/views/welcome.blade.php`), désactivée si `prefers-reduced-motion: reduce`.
+
+### Tests
+2 nouveaux tests dans [`CartTest.php`](tests/Feature/CartTest.php) couvrant la réponse JSON (succès et stock insuffisant). **79/79 tests passent.**
+
+---
+
+## Fonctionnalité ajoutée — Thème clair / sombre / système — 2026-09-01
+
+### Demande utilisateur
+Aucun mode sombre n'existait dans le projet. Demande d'un vrai bouton de bascule clair/sombre/système sur tout le site.
+
+### Architecture
+Toute l'appli utilisait des couleurs codées en dur (`style="background:#hexcode"`) plutôt que des classes Tailwind `dark:`. Plutôt que de réécrire chaque élément, la palette a été convertie en variables CSS ([app.css](resources/css/app.css)) : `:root` définit les valeurs claires (identiques à l'existant, donc **zéro changement visuel en mode clair**), `.dark` les redéfinit. Une trentaine de couleurs codées en dur ont été remplacées par `var(--nom)` dans les vues via un script de remplacement global, en prenant soin de distinguer les usages qui doivent changer de thème (texte, badges) de ceux qui doivent rester fixes (ex. `#0f2942` en fond de bouton/footer reste une couleur d'accent volontairement toujours sombre).
+
+Pour les classes Tailwind neutres (`bg-white`, `text-gray-900`, `border-gray-100`...), utilisées des centaines de fois : surcharge globale par sélecteur (`.dark .bg-white { ... }`) dans app.css plutôt que d'ajouter `dark:` sur chaque élément de chaque vue — ces utilitaires signifient toujours "surface / texte / bordure" dans cette appli. Les champs de formulaire (`input`, `select`, `textarea`), qui n'avaient aucune classe de fond explicite, ont eu droit au même traitement global.
+
+### Bascule clair/sombre/système
+[`resources/js/theme.js`](resources/js/theme.js) : préférence mémorisée dans `localStorage`, "système" (par défaut) suit `prefers-color-scheme` et se met à jour en direct si l'OS change de thème pendant que la page est ouverte. Un petit script inline synchrone est ajouté en tête de chaque `<head>` pour appliquer la classe `.dark` avant le premier rendu (évite le flash de mauvais thème). Composant partagé [`<x-theme-toggle />`](resources/views/components/theme-toggle.blade.php) (3 boutons icône) déposé dans toutes les navs (accueil, panier, mes commandes, profil, admin, login/register).
+
+### Tailwind
+`darkMode: 'class'` ajouté à [tailwind.config.js](tailwind.config.js).
+
+### Tests
+Aucun changement de logique métier — 79/79 tests toujours au vert. Vérifié en conditions réelles (clair, sombre, bascule en direct) sur : accueil (invité et connecté), connexion, dashboard admin, édition produit (formulaire + section lots), liste commandes admin.
+
+Vérifié en conditions réelles dans le navigateur : clic sur "Ajouter au panier" → une seule requête `POST` (200, JSON), aucune navigation, la page reste au même scroll, le badge panier passe de 0 à 1 immédiatement, toast affiché puis disparu après ~2s.

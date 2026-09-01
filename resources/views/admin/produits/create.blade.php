@@ -13,9 +13,9 @@
                     @csrf
 
                     @if ($errors->any())
-                        <div class="mb-6 rounded-xl p-4" style="background:#fef2f2;border:1px solid #fecaca;">
-                            <p class="font-bold text-sm mb-2" style="color:#b91c1c;">Merci de corriger les erreurs suivantes :</p>
-                            <ul class="list-disc list-inside text-xs" style="color:#b91c1c;">
+                        <div class="mb-6 rounded-xl p-4" style="background:var(--danger-bg);border:1px solid var(--danger-border);">
+                            <p class="font-bold text-sm mb-2" style="color:var(--danger);">Merci de corriger les erreurs suivantes :</p>
+                            <ul class="list-disc list-inside text-xs" style="color:var(--danger);">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -57,9 +57,9 @@
                         </div>
 
                         <div class="flex items-end">
-                            <label class="flex items-center gap-3 rounded-xl px-4 py-3 w-full cursor-pointer" style="background:#fef2f2;border:1px solid #fecaca;">
+                            <label class="flex items-center gap-3 rounded-xl px-4 py-3 w-full cursor-pointer" style="background:var(--danger-bg);border:1px solid var(--danger-border);">
                                 <input type="checkbox" name="sur_ordonnance" value="1" @checked(old('sur_ordonnance')) class="rounded border-gray-300 text-red-600 focus:ring-red-300 h-4 w-4">
-                                <span class="text-xs font-bold" style="color:#b91c1c;">Nécessite une ordonnance</span>
+                                <span class="text-xs font-bold" style="color:var(--danger);">Nécessite une ordonnance</span>
                             </label>
                         </div>
 
@@ -79,7 +79,7 @@
                         <a href="{{ route('admin.produits.index') }}" class="text-sm font-bold text-gray-500 hover:text-gray-700">
                             Annuler
                         </a>
-                        <button type="submit" class="text-sm font-bold px-6 py-3 rounded-full text-white" style="background:#0284c7;">
+                        <button type="submit" class="text-sm font-bold px-6 py-3 rounded-full text-white" style="background:var(--brand);">
                             Enregistrer le produit
                         </button>
                     </div>

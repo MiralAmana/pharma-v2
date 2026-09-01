@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Bienvenue, Docteur 👋
+            Bienvenue, Docteur
         </h2>
     </x-slot>
 
@@ -10,44 +10,44 @@
 
             <div class="grid grid-cols-1 md:grid-cols-4 gap-5">
 
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" style="border-left:3px solid #d97706;">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="flex items-center justify-between mb-3.5">
                         <span class="text-xs font-bold text-gray-500">Commandes en attente</span>
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#fffbeb;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:var(--warning-bg);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--warning-text)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
                         </div>
                     </div>
                     <div class="text-3xl font-extrabold text-gray-900 mb-1.5">{{ $commandesEnAttente }}</div>
                     <a href="{{ route('admin.commandes') }}" class="text-xs font-bold text-yellow-700">Traiter maintenant →</a>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" style="border-left:3px solid #6d28d9;">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="flex items-center justify-between mb-3.5">
                         <span class="text-xs font-bold text-gray-500">Produits au catalogue</span>
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#f5f3ff;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#6d28d9" stroke-width="2"><path d="M20 7 12 3 4 7v10l8 4 8-4Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:var(--violet-bg);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--violet)" stroke-width="2"><path d="M20 7 12 3 4 7v10l8 4 8-4Z"/><path d="M4 7l8 4 8-4M12 11v10"/></svg>
                         </div>
                     </div>
                     <div class="text-3xl font-extrabold text-gray-900 mb-1.5">{{ $totalProduits }}</div>
                     <span class="text-xs font-semibold text-gray-400">Au catalogue actif</span>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" style="border-left:3px solid #dc2626;">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="flex items-center justify-between mb-3.5">
                         <span class="text-xs font-bold text-gray-500">Alertes stock</span>
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#fef2f2;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:var(--danger-bg);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
                         </div>
                     </div>
                     <div class="text-3xl font-extrabold text-gray-900 mb-1.5">{{ $alerteStock }}</div>
                     <span class="text-xs font-semibold text-gray-400">Produits &lt; 5 unités</span>
                 </div>
 
-                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm" style="border-left:3px solid #16a34a;">
+                <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="flex items-center justify-between mb-3.5">
                         <span class="text-xs font-bold text-gray-500">Chiffre d'affaires</span>
-                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:#f0fdf4;">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2"><path d="m23 6-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+                        <div class="w-9 h-9 rounded-lg flex items-center justify-center" style="background:var(--success-bg);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--success-strong)" stroke-width="2"><path d="m23 6-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
                         </div>
                     </div>
                     <div class="text-2xl font-extrabold text-green-700 mb-1.5">{{ number_format($chiffreAffaires, 0, ',', ' ') }} <span class="text-sm">FCFA</span></div>
@@ -58,10 +58,10 @@
 
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex items-center gap-4">
                 <span class="font-bold text-gray-900 text-sm shrink-0">Actions rapides</span>
-                <a href="{{ route('admin.produits.create') }}" class="flex-1 text-center rounded-full font-bold text-sm py-2.5" style="background:#eff6ff;color:#1d4ed8;">
+                <a href="{{ route('admin.produits.create') }}" class="flex-1 text-center rounded-full font-bold text-sm py-2.5" style="background:var(--sky-bg-1);color:var(--blue-text);">
                     + Ajouter un produit
                 </a>
-                <a href="{{ route('admin.commandes') }}" class="flex-1 text-center rounded-full font-bold text-sm py-2.5" style="background:#fffbeb;color:#b45309;">
+                <a href="{{ route('admin.commandes') }}" class="flex-1 text-center rounded-full font-bold text-sm py-2.5" style="background:var(--warning-bg);color:var(--warning-text);">
                     Voir les commandes en attente
                 </a>
             </div>
@@ -70,7 +70,7 @@
 
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="flex items-center gap-2 mb-4">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"/></svg>
                         <h3 class="font-extrabold text-gray-900">Risques de péremption (3 mois)</h3>
                     </div>
 
@@ -91,15 +91,16 @@
                             @endforeach
                         </div>
                     @else
-                        <p class="text-green-700 font-semibold text-sm p-4 rounded-xl" style="background:#f0fdf4;">
-                            ✅ Aucun lot ne périme bientôt.
+                        <p class="text-green-700 font-semibold text-sm p-4 rounded-xl flex items-center gap-2" style="background:var(--success-bg);">
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--success-strong)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" class="shrink-0"><path d="m20 6-11 11-5-5"/></svg>
+                            Aucun lot ne périme bientôt.
                         </p>
                     @endif
                 </div>
 
                 <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                     <div class="flex items-center gap-2 mb-4">
-                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#15803d" stroke-width="2"><path d="m23 6-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
+                        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--success-strong)" stroke-width="2"><path d="m23 6-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>
                         <h3 class="font-extrabold text-gray-900">Produits phares — Top 5 ventes</h3>
                     </div>
 
@@ -109,7 +110,7 @@
                             @foreach($topProduits as $index => $item)
                                 @if($item->produit)
                                     <div class="flex items-center gap-3">
-                                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 {{ $index == 0 ? 'text-white' : 'text-gray-700' }}" style="background:{{ $index == 0 ? '#0369a1' : '#e5e7eb' }};">
+                                        <span class="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-extrabold shrink-0 {{ $index == 0 ? 'text-white' : 'text-gray-700' }}" style="background:{{ $index == 0 ? 'var(--brand-hover)' : 'var(--border-1)' }};">
                                             {{ $index + 1 }}
                                         </span>
                                         <span class="flex-1 text-sm font-semibold text-gray-900 truncate">{{ $item->produit->nom }}</span>

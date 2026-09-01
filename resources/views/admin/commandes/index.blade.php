@@ -10,7 +10,7 @@
 
             <div class="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex flex-col sm:flex-row sm:items-center gap-4">
                 <form action="{{ route('admin.commandes') }}" method="GET" class="flex-1 flex items-center gap-2 rounded-full bg-gray-50 border border-gray-100 px-4 py-2.5">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" class="shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gray-icon)" stroke-width="2" class="shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     <input type="text" name="recherche" value="{{ request('recherche') }}" placeholder="Rechercher par référence ou client…" class="flex-1 bg-transparent border-0 focus:ring-0 text-sm p-0">
                     @if(request('statut'))
                         <input type="hidden" name="statut" value="{{ request('statut') }}">
@@ -29,7 +29,7 @@
                     @foreach($statuts as $value => $label)
                         <a href="{{ route('admin.commandes', array_filter(['statut' => $value, 'recherche' => request('recherche')])) }}"
                            class="text-xs font-bold px-4 py-2 rounded-full"
-                           style="{{ request('statut') == $value ? 'background:#0284c7;color:#fff;' : 'background:#f3f4f6;color:#4b5563;' }}">
+                           style="{{ request('statut') == $value ? 'background:var(--brand);color:#fff;' : 'background:var(--border-2);color:var(--gray-text-3);' }}">
                             {{ $label }}
                         </a>
                     @endforeach
@@ -66,7 +66,7 @@
                         <div class="w-28 shrink-0">
                             @if($commande->image_ordonnance)
                                 <a href="{{ route('ordonnances.show', $commande->id) }}" target="_blank" class="text-xs font-bold text-blue-700 flex items-center gap-1">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--blue-text)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z"/><path d="M14 2v6h6"/></svg>
                                     Ordonnance
                                 </a>
                             @else
@@ -76,18 +76,18 @@
 
                         <div class="w-32 shrink-0">
                             @if($commande->statut == 'en_attente')
-                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:#fffbeb;color:#b45309;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:var(--warning-bg);color:var(--warning-text);">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--warning-text)" stroke-width="2.2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
                                     En attente
                                 </span>
                             @elseif($commande->statut == 'validée')
-                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:#f0fdf4;color:#166534;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#166534" stroke-width="2.6"><path d="m20 6-11 11-5-5"/></svg>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:var(--success-bg);color:var(--success-text);">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--success-text)" stroke-width="2.6"><path d="m20 6-11 11-5-5"/></svg>
                                     Validée
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:#fef2f2;color:#b91c1c;">
-                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="m9.5 9.5 5 5m0-5-5 5"/></svg>
+                                <span class="inline-flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full" style="background:var(--danger-bg);color:var(--danger);">
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="m9.5 9.5 5 5m0-5-5 5"/></svg>
                                     Annulée
                                 </span>
                             @endif
@@ -102,11 +102,11 @@
                             @if($commande->statut == 'en_attente')
                                 <form action="{{ route('admin.valider', $commande->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-full text-white" style="background:#16a34a;">Valider</button>
+                                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-full text-white" style="background:var(--success);">Valider</button>
                                 </form>
                                 <form action="{{ route('admin.annuler', $commande->id) }}" method="POST">
                                     @csrf
-                                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-full" style="background:#fef2f2;color:#b91c1c;">Annuler</button>
+                                    <button type="submit" class="text-xs font-bold px-4 py-2 rounded-full" style="background:var(--danger-bg);color:var(--danger);">Annuler</button>
                                 </form>
                             @else
                                 <span class="text-xs text-gray-300 px-2">Terminé</span>

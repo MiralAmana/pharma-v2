@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Modifier le médicament : <span style="color:#0369a1;">{{ $produit->nom }}</span>
+            Modifier le médicament : <span style="color:var(--brand-hover);">{{ $produit->nom }}</span>
         </h2>
     </x-slot>
 
@@ -14,9 +14,9 @@
                     @method('PUT')
 
                     @if ($errors->any())
-                        <div class="mb-6 rounded-xl p-4" style="background:#fef2f2;border:1px solid #fecaca;">
-                            <p class="font-bold text-sm mb-2" style="color:#b91c1c;">Merci de corriger les erreurs suivantes :</p>
-                            <ul class="list-disc list-inside text-xs" style="color:#b91c1c;">
+                        <div class="mb-6 rounded-xl p-4" style="background:var(--danger-bg);border:1px solid var(--danger-border);">
+                            <p class="font-bold text-sm mb-2" style="color:var(--danger);">Merci de corriger les erreurs suivantes :</p>
+                            <ul class="list-disc list-inside text-xs" style="color:var(--danger);">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
                                 @endforeach
@@ -46,18 +46,18 @@
                         </div>
 
                         <div class="md:col-span-2">
-                            <div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background:#f0f9ff;">
+                            <div class="rounded-xl px-4 py-3 flex items-center justify-between" style="background:var(--sky-bg-2);">
                                 <span class="text-xs font-bold text-gray-500">Stock actuel (calculé à partir des lots ci-dessous)</span>
-                                <span class="text-lg font-extrabold" style="color:#0369a1;">{{ $produit->stock }} unité(s)</span>
+                                <span class="text-lg font-extrabold" style="color:var(--brand-hover);">{{ $produit->stock }} unité(s)</span>
                             </div>
                         </div>
 
                         <div class="flex items-end">
-                            <label class="flex items-center gap-3 rounded-xl px-4 py-3 w-full cursor-pointer" style="background:#fef2f2;border:1px solid #fecaca;">
+                            <label class="flex items-center gap-3 rounded-xl px-4 py-3 w-full cursor-pointer" style="background:var(--danger-bg);border:1px solid var(--danger-border);">
                                 <input type="checkbox" name="sur_ordonnance" value="1"
                                        @checked(old('sur_ordonnance', $produit->sur_ordonnance))
                                        class="rounded border-gray-300 text-red-600 focus:ring-red-300 h-4 w-4">
-                                <span class="text-xs font-bold" style="color:#b91c1c;">Nécessite une ordonnance</span>
+                                <span class="text-xs font-bold" style="color:var(--danger);">Nécessite une ordonnance</span>
                             </label>
                         </div>
 
@@ -81,7 +81,7 @@
                         <a href="{{ route('admin.produits.index') }}" class="text-sm font-bold text-gray-500 hover:text-gray-700">
                             Annuler
                         </a>
-                        <button type="submit" class="text-sm font-bold px-6 py-3 rounded-full text-white" style="background:#0284c7;">
+                        <button type="submit" class="text-sm font-bold px-6 py-3 rounded-full text-white" style="background:var(--brand);">
                             Enregistrer les modifications
                         </button>
                     </div>
@@ -101,7 +101,7 @@
                             @php $diasAvant = \Carbon\Carbon::now()->diffInDays($lot->date_peremption, false); @endphp
                             <div class="flex items-center gap-3 py-3 {{ !$loop->last ? 'border-b border-gray-50' : '' }}">
                                 <span class="font-bold text-gray-900 text-sm w-24">{{ $lot->quantite }} unité(s)</span>
-                                <span class="text-sm font-semibold w-28" style="color: {{ $diasAvant <= 90 ? '#b91c1c' : '#374151' }};">
+                                <span class="text-sm font-semibold w-28" style="color: {{ $diasAvant <= 90 ? 'var(--danger)' : 'var(--gray-text-1)' }};">
                                     {{ $lot->date_peremption->format('d/m/Y') }}
                                 </span>
                                 <span class="text-xs text-gray-400 flex-1">{{ $lot->numero_lot ? 'Lot n°'.$lot->numero_lot : '—' }}</span>
@@ -129,7 +129,7 @@
                         <label class="block text-xs font-bold text-gray-500 mb-1.5">N° de lot</label>
                         <input type="text" name="numero_lot" class="rounded-xl border-gray-200 text-sm focus:border-sky-500 focus:ring-sky-500 w-32" placeholder="Optionnel">
                     </div>
-                    <button type="submit" class="text-sm font-bold px-5 py-2.5 rounded-full text-white" style="background:#16a34a;">
+                    <button type="submit" class="text-sm font-bold px-5 py-2.5 rounded-full text-white" style="background:var(--success);">
                         + Réceptionner ce lot
                     </button>
                 </form>

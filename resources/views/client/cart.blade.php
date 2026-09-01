@@ -3,29 +3,39 @@
 <head>
     <meta charset="utf-8">
     <title>Mon Panier</title>
+    <script>
+        (function () {
+            var pref = localStorage.getItem('theme') || 'system';
+            var isDark = pref === 'dark' || (pref === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            if (isDark) document.documentElement.classList.add('dark');
+        })();
+    </script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         .btn-pill { display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:999px; font-weight:700; font-size:14px; cursor:pointer; border:none; }
-        .btn-blue { background:#0284c7; color:#fff; padding:14px 26px; }
-        .btn-blue:hover { background:#0369a1; }
-        .iconbtn { width:38px; height:38px; border-radius:999px; border:1.5px solid #e5e7eb; display:flex; align-items:center; justify-content:center; }
+        .btn-blue { background:var(--brand); color:#fff; padding:14px 26px; }
+        .btn-blue:hover { background:var(--brand-hover); }
+        .iconbtn { width:38px; height:38px; border-radius:999px; border:1.5px solid var(--border-1); display:flex; align-items:center; justify-content:center; }
         .badge-pill { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
-        .stepbtn { width:28px; height:28px; border-radius:8px; border:1.5px solid #e5e7eb; background:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; color:#374151; }
+        .stepbtn { width:28px; height:28px; border-radius:8px; border:1.5px solid var(--border-1); background:var(--surface); display:flex; align-items:center; justify-content:center; font-weight:700; color:var(--gray-text-1); }
     </style>
 </head>
 <body class="bg-gray-50" style="font-family:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
 
-    <nav class="bg-white border-b border-gray-100">
+    <nav class="glass-nav sticky top-0 z-50">
         <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
             <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <img src="{{ asset('logo.jpg') }}" alt="Logo Pharmacie" class="h-10 w-10 rounded-xl object-cover">
-                <span class="text-xl font-extrabold text-gray-900">PharmaPro</span>
+                <img src="{{ asset('logo.png') }}" alt="Logo Pharmacie" class="h-10 w-10 rounded-xl object-cover">
+                <span class="text-xl font-extrabold"><span style="color:var(--navy);">Pharma</span><span style="color:var(--brand);">Pro</span></span>
             </a>
-            <a href="{{ route('home') }}" class="text-sm font-semibold text-gray-600 hover:text-sky-700 flex items-center gap-1.5">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-                Retour aux achats
-            </a>
+            <div class="flex items-center gap-4">
+                <x-theme-toggle />
+                <a href="{{ route('home') }}" class="text-sm font-semibold text-gray-600 hover:text-sky-700 flex items-center gap-1.5">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                    Retour aux achats
+                </a>
+            </div>
         </div>
     </nav>
 
@@ -46,20 +56,20 @@
                 @forelse($cart as $id => $details)
                     @php $totalLigne = $details['price'] * $details['quantity']; @endphp
                     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0" style="background:#f7f8f7;">
+                        <div class="w-16 h-16 rounded-xl overflow-hidden shrink-0" style="background:var(--surface-alt);">
                             @if(!empty($details['image']))
                                 <img src="{{ asset('storage/' . $details['image']) }}" alt="{{ $details['name'] }}" class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gray-icon)" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M9 8h6M9 12h6M9 16h4"/></svg>
                                 </div>
                             @endif
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="font-bold text-gray-900 text-sm truncate">{{ $details['name'] }}</div>
                             @if(in_array($id, $idsSurOrdonnance))
-                                <span class="badge-pill mt-1" style="background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;">
-                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.4"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22Z"/></svg>
+                                <span class="badge-pill mt-1" style="background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);">
+                                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2.4"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22Z"/></svg>
                                     Ordonnance requise
                                 </span>
                             @endif
@@ -116,7 +126,7 @@
                         @if($needsPrescription)
                             <div class="mb-4 text-left bg-red-50 p-4 rounded-xl border border-red-200">
                                 <label class="flex items-center gap-2 text-red-700 font-bold mb-2 text-sm">
-                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22Z"/></svg>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22Z"/></svg>
                                     Ordonnance requise
                                 </label>
                                 <p class="text-xs text-gray-600 mb-3">Votre panier contient un médicament sur ordonnance. Merci de joindre une photo ou un scan pour continuer.</p>

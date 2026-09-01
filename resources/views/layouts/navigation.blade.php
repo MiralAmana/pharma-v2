@@ -1,12 +1,10 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100" style="font-family:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+<nav x-data="{ open: false }" class="glass-nav sticky top-0 z-50" style="font-family:'Figtree',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-20">
             <div class="flex items-center gap-11">
                 <a href="{{ route('dashboard') }}" class="flex items-center gap-3 shrink-0">
-                    <div class="w-9 h-9 rounded-xl flex items-center justify-center" style="background:#16a34a;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M4 12h16" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
-                    </div>
-                    <span class="text-lg font-extrabold text-gray-900">PharmaPro</span>
+                    <img src="{{ asset('logo.png') }}" alt="Logo Pharmacie" class="w-9 h-9 rounded-xl object-cover">
+                    <span class="text-lg font-extrabold"><span style="color:var(--navy);">Pharma</span><span style="color:var(--brand);">Pro</span></span>
                     <span class="text-[11px] font-bold uppercase tracking-wide text-gray-500 bg-gray-100 px-2 py-0.5 rounded">Espace Gérant</span>
                 </a>
 
@@ -17,11 +15,12 @@
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="hidden sm:flex sm:items-center sm:ms-6 gap-4">
+                <x-theme-toggle />
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="flex items-center gap-2.5">
-                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-extrabold" style="background:#0369a1;">
+                            <div class="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-extrabold" style="background:var(--brand-hover);">
                                 {{ collect(explode(' ', Auth::user()->name))->map(fn($p) => mb_substr($p, 0, 1))->join('') }}
                             </div>
                             <span class="text-sm font-bold text-gray-900">{{ Auth::user()->name }}</span>
@@ -73,9 +72,12 @@
         </div>
 
         <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+            <div class="px-4 flex items-center justify-between">
+                <div>
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                </div>
+                <x-theme-toggle />
             </div>
 
             <div class="mt-3 space-y-1">

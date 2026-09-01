@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Client;
 
 use App\Http\Controllers\Controller;
 use App\Models\Produit;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -24,7 +25,7 @@ class CartController extends Controller
     }
 
     // 2. AJOUTER UN PRODUIT
-    public function addToCart($id)
+    public function addToCart(Request $request, $id)
     {
         $produit = Produit::findOrFail($id);
 
@@ -32,7 +33,13 @@ class CartController extends Controller
         $quantiteActuelle = $cart[$id]['quantity'] ?? 0;
 
         if ($quantiteActuelle + 1 > $produit->stock) {
-            return redirect()->back()->with('error', 'Stock insuffisant : il ne reste que '.$produit->stock.' unité(s) de "'.$produit->nom.'".');
+            $message = 'Stock insuffisant : il ne reste que '.$produit->stock.' unité(s) de "'.$produit->nom.'".';
+
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'message' => $message, 'cartCount' => count($cart)]);
+            }
+
+            return redirect()->back()->with('error', $message);
         }
 
         if (isset($cart[$id])) {
@@ -47,6 +54,10 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'message' => 'Produit ajouté au panier !', 'cartCount' => count($cart)]);
+        }
 
         return redirect()->back()->with('success', 'Produit ajouté au panier !');
     }
